@@ -9,6 +9,7 @@ import {
   useParams
 } from "react-router-dom";
 import orcamento from "../../../service/orcamento";
+import produto from "../../../service/produto";
 
 import "../index.css";
 
@@ -23,12 +24,22 @@ interface IOrcamentoProduto {
   valor: number;
 }
 
+interface IProduto {
+  id: number,
+  nome : string,
+  idTipoMedida : number,
+  quantidade : number,
+  valorPago : number,
+  valorVenda : number,
+}
+
 const Cadastro: React.FC = () => {
   const history = useHistory();
   const { id } = useParams<{id : string}>();
 
 
   useEffect(() => {
+    carregarProdutos();
     if(id !== undefined)
     {
       recuperarOrcamento();
@@ -36,6 +47,8 @@ const Cadastro: React.FC = () => {
   }, [id]);
 
 
+  const [orcamentoProdutos, setOrcamentoProdutos] = useState<IOrcamentoProduto[]>([]);
+  const [produtos, setProdutos] = useState<IProduto[]>([]);
   const [model, setModel] = useState<IOrcamento>({
     id : 0,
     nome: "",
@@ -43,15 +56,18 @@ const Cadastro: React.FC = () => {
     orcamentoProdutos: [],
   });
 
-  const [orcamentoProdutos, setOrcamentoProdutos] = useState<
-    IOrcamentoProduto[]
-  >([]);
 
   function atualizarModel(e: ChangeEvent<HTMLInputElement>) {
     setModel({
       ...model,
       [e.target.name]: e.target.value,
     });
+  }
+
+  async function carregarProdutos()
+  {
+    const { data } = await produto.listar();
+    setProdutos(data);
   }
 
   const handleSubmit = async (e: any) => {
@@ -106,7 +122,12 @@ const Cadastro: React.FC = () => {
               <Form.Label>Produtos</Form.Label>
               <Form.Control as="select" defaultValue="Selecione...">
                 <option>Selecione...</option>
-                <option>...</option>
+                {
+                  produtos.map((item) => (
+
+                    <option key={item.id}>{item.nome}</option>
+                  ))
+                }
               </Form.Control>
             </Form.Group>
 

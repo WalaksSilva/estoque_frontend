@@ -12,6 +12,10 @@ const Routes : React.FC = ()  => {
     <Switch>            
         <Route path="/" exact component={Home}/>
         <Route path="/Produtos" exact component={Produto}/>
+        {/* <Route path="/Produtos/cadastro" exact component={}/>
+        <Route path="/Produtos/cadastro/:id" exact component={}/>
+        <Route path="/Produtos/detalher/:id" exact component={}/> */}
+
         <Route path="/orcamentos" exact component={Orcamento}/>
         <Route path="/orcamentos/cadastro" exact component={OrcamentoCadastro}/>
         <Route path="/orcamentos/cadastro/:id" exact component={OrcamentoCadastro}/>
