@@ -54,7 +54,7 @@ const Produto : React.FC = ()  => {
           <Button variant="dark" size="sm" onClick={novo}>Novo produto</Button>
       </div>
       <br />
-      <Table striped bordered hover className="text-center">
+      <Table striped bordered hover className="text-center" variant="dark">
         <thead>
           <tr>
             <th>Id</th>

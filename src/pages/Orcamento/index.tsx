@@ -71,7 +71,7 @@ const Orcamento: React.FC = () => {
           <Button variant="dark" size="sm" onClick={novoOrcamento}>Novo Orçamento</Button>
       </div>
       <br />
-      <Table striped bordered hover className="text-center">
+      <Table striped bordered hover className="text-center" variant="dark" responsive="xl">
         <thead>
           <tr>
             <th>Id</th>
