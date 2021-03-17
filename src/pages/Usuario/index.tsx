@@ -22,7 +22,7 @@ const Login: React.FC = () => {
 
   return (
     <div className="container login">
-      {/* <button onClick={handleLogin}>Login</button> */}
+      <button onClick={handleLogin}>Login</button>
       <Form>
         <Form.Group controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>

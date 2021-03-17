@@ -44,6 +44,13 @@ const Produto : React.FC = ()  => {
     history.push(`/produtos/detalher/${id}`);
   }
 
+  function excluir(id : number)
+  {
+    const values  = [...produtos];
+    values.splice(values.findIndex(value => value.id === id), 1);
+    setProdutos(values);
+  }
+
   return (
     <div className="container">
       <br />
@@ -68,9 +75,9 @@ const Produto : React.FC = ()  => {
         <tbody>
           {produtos 
           ?
-           produtos.map((item) => (
-            <tr key={item.id}>
-              <td>{item.id}</td>
+           produtos.map((item, index) => (
+            <tr key={index}>
+              <td>{index}</td>
               <td>{item.nome}</td>
               <td>{item.quantidade}</td>
               <td>{item.valorPago}</td>
@@ -82,7 +89,7 @@ const Produto : React.FC = ()  => {
                 <Button variant="info" size="sm" onClick={() => detalhe(item.id)}>
                   Visualizar
                 </Button>{" "}
-                <Button variant="danger" size="sm">
+                <Button variant="danger" size="sm" onClick={() => excluir(item.id)}>
                   Excluir
                 </Button>
               </td>
