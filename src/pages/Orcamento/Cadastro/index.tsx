@@ -1,5 +1,5 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
-import { Button, Col, Form, Row } from "react-bootstrap";
+import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import {
   BrowserRouter as Router,
   Route,
@@ -11,11 +11,12 @@ import {
 import orcamentoAPI from "../../../service/orcamento";
 import produto from "../../../service/produto";
 
-import "../index.css";
+import "./index.css";
 
 interface IOrcamento {
   id: number;
   nome: string;
+  cpfCnpj: string;
   total: number;
   areas: IArea[];
 }
@@ -54,7 +55,7 @@ const Cadastro: React.FC = () => {
     }
   }, [id]);
 
-  const [total, setTotal] = useState<string>('')
+  const [total, setTotal] = useState<string>("");
   const history = useHistory();
   const [itens, setItens] = useState<IItem[]>([]);
   const [item, setItem] = useState<IItem>({
@@ -73,6 +74,7 @@ const Cadastro: React.FC = () => {
   const [orcamento, setOrcamento] = useState<IOrcamento>({
     id: 0,
     nome: "",
+    cpfCnpj: "",
     total: 0,
     areas: [
       ...areas,
@@ -162,6 +164,9 @@ const Cadastro: React.FC = () => {
     const { data } = await orcamentoAPI.recuperar(id);
 
     setOrcamento(data);
+    setTotal(
+      data.total.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
+    );
   }
 
   function back() {
@@ -216,9 +221,10 @@ const Cadastro: React.FC = () => {
     const value = { ...orcamento };
 
     let id = parseInt(e.target.value);
-    
-    const prod = produtos.find(x => x.id === id);
-    value.areas[indexArea].itens[indexItem].valorUnitario = prod !== undefined ? prod.valorVenda : 0;
+
+    const prod = produtos.find((x) => x.id === id);
+    value.areas[indexArea].itens[indexItem].valorUnitario =
+      prod !== undefined ? prod.valorVenda : 0;
 
     setOrcamento(value);
   }
@@ -243,9 +249,8 @@ const Cadastro: React.FC = () => {
         m2,
         valorUnitario
       );
-
     }
-    
+
     setOrcamento(value);
     calcularTotal();
   }
@@ -263,7 +268,12 @@ const Cadastro: React.FC = () => {
     );
 
     value.total = parseFloat(total.toFixed(2));
-    setTotal(value.total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }))
+    setTotal(
+      value.total.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      })
+    );
     setOrcamento(value);
   }
 
@@ -274,11 +284,16 @@ const Cadastro: React.FC = () => {
       <br />
       <div className="orcamento-header">
         <h1>Cadastro</h1>
-        <Button onClick={addArea} variant="dark" size="sm">
+      </div>
+
+      <div>
+        <Button
+          onClick={addArea}
+          variant="dark"
+          size="sm"
+          className="float-right"
+        >
           Adicionar área
-        </Button>
-        <Button onClick={back} variant="dark" size="sm">
-          Voltar
         </Button>
       </div>
 
@@ -309,152 +324,163 @@ const Cadastro: React.FC = () => {
                   type="text"
                   placeholder="CPF/CNPJ"
                   name="cpfCnpj"
+                  value={orcamento.cpfCnpj}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    atualizarOrcamento(e)
+                  }
                 />
               </Form.Group>
             </Col>
           </Row>
-          <hr />
+          
           {orcamento.areas.map((area, index) => (
-            <div key={index}>
-              <Row>
-                <Col>
-                  <Button
-                    className="float-right"
-                    onClick={() => addItem(index)}
-                    variant="dark"
-                    size="sm"
-                  >
-                    Adicionar produto
-                  </Button>
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <Form.Group>
-                    <Form.Label>Área</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Área"
-                      name="nome"
-                      value={area.nome}
-                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                        atualizarArea(e, index)
-                      }
-                    />
-                  </Form.Group>
-                </Col>
-              </Row>
-
-              {area.itens.map((item, indexItem) => (
-                <div key={indexItem}>
+            <Card>
+              <Card.Body>
+                <div key={index}>
                   <Row>
                     <Col>
-                      <Form.Label>Produtos</Form.Label>
-
-                      <Form.Control
-                        as="select"
-                        defaultValue="Selecione..."
-                        name="idProduto"
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => (
-                          atualizarItem(e, index, indexItem),
-                          setValorUnitario(index, indexItem, e)
-                        )
-                        }
+                      <Button
+                        className="float-right"
+                        onClick={() => addItem(index)}
+                        variant="dark"
+                        size="sm"
                       >
-                        <option>Selecione...</option>
-                        {produtos
-                          ? produtos.map((produto) => (
-                              <option
-                                key={produto.id}
-                                value={produto.id}
-                              >
-                                {produto.nome}
-                              </option>
-                            ))
-                          : "Loading..."}
-                      </Form.Control>
+                        Adicionar produto
+                      </Button>
                     </Col>
-
+                  </Row>
+                  <Row>
                     <Col>
                       <Form.Group>
-                        <Form.Label>Comprimento</Form.Label>
-                        <Form.Control
-                          type="number"
-                          placeholder="0,500"
-                          name="comprimento"
-                          pattern='[0-9]{0,5}'
-                          value={item.comprimento}
-                          onChange={(e: ChangeEvent<HTMLInputElement>) => (
-                            atualizarItem(e, index, indexItem),
-                            calcularM2(index, indexItem)
-                          )}
-                        />
-                      </Form.Group>
-                    </Col>
-                    <Col>
-                      <Form.Group>
-                        <Form.Label>Largura</Form.Label>
-                        <Form.Control
-                          type="number"
-                          placeholder="0,500"
-                          name="largura"
-                          pattern='[0-9]{0,5}'
-                          value={item.largura}
-                          onChange={(e: ChangeEvent<HTMLInputElement>) => (
-                            atualizarItem(e, index, indexItem),
-                            calcularM2(index, indexItem)
-                          )}
-                        />
-                      </Form.Group>
-                    </Col>
-                    <Col>
-                      <Form.Group>
-                        <Form.Label>M²</Form.Label>
+                        <Form.Label>Área</Form.Label>
                         <Form.Control
                           type="text"
-                          placeholder="M²"
-                          name="m2"
-                          disabled={true}
-                          value={item.m2}
+                          placeholder="Área"
+                          name="nome"
+                          value={area.nome}
                           onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                            atualizarItem(e, index, indexItem)
+                            atualizarArea(e, index)
                           }
                         />
                       </Form.Group>
                     </Col>
-                    <Col>
-                      <Form.Group>
-                        <Form.Label>Valor unitário</Form.Label>
-                        <Form.Control
-                          type="text"
-                          placeholder="Valor unitário"
-                          name="valorUnitario"
-                          value={item.valorUnitario}
-                          onChange={(e: ChangeEvent<HTMLInputElement>) => (
-                            atualizarItem(e, index, indexItem),
-                            calcularM2(index, indexItem)
-                          )}
-                        />
-                      </Form.Group>
-                    </Col>
-                    <Col>
-                      <Form.Group>
-                        <Form.Label>Sub total</Form.Label>
-                        <Form.Control
-                          type="text"
-                          placeholder="Valor total"
-                          name="valorTotal"
-                          disabled={true}
-                          value={item.valorTotal}
-                        />
-                      </Form.Group>
-                    </Col>
                   </Row>
+
+                  {area.itens.map((item, indexItem) => (
+                    <div key={indexItem}>
+                      <Row>
+                        <Col>
+                          <Form.Label>Produtos</Form.Label>
+
+                          <Form.Control
+                            as="select"
+                            defaultValue="Selecione..."
+                            name="idProduto"
+                            value={item.idProduto}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) => (
+                              atualizarItem(e, index, indexItem),
+                              setValorUnitario(index, indexItem, e)
+                            )}
+                          >
+                            <option>Selecione...</option>
+                            {produtos
+                              ? produtos.map((produto) => (
+                                  <option
+                                    key={produto.id}
+                                    value={produto.id}
+                                    selected={produto.id === item.idProduto}
+                                  >
+                                    {produto.nome}{" "}
+                                    {produto.id === item.idProduto
+                                      ? "true"
+                                      : "false"}
+                                  </option>
+                                ))
+                              : "Loading..."}
+                          </Form.Control>
+                        </Col>
+
+                        <Col>
+                          <Form.Group>
+                            <Form.Label>Comprimento</Form.Label>
+                            <Form.Control
+                              type="number"
+                              placeholder="0,500"
+                              name="comprimento"
+                              pattern="[0-9]{0,5}"
+                              value={item.comprimento}
+                              onChange={(e: ChangeEvent<HTMLInputElement>) => (
+                                atualizarItem(e, index, indexItem),
+                                calcularM2(index, indexItem)
+                              )}
+                            />
+                          </Form.Group>
+                        </Col>
+                        <Col>
+                          <Form.Group>
+                            <Form.Label>Largura</Form.Label>
+                            <Form.Control
+                              type="number"
+                              placeholder="0,500"
+                              name="largura"
+                              value={item.largura}
+                              onChange={(e: ChangeEvent<HTMLInputElement>) => (
+                                atualizarItem(e, index, indexItem),
+                                calcularM2(index, indexItem)
+                              )}
+                            />
+                          </Form.Group>
+                        </Col>
+                        <Col>
+                          <Form.Group>
+                            <Form.Label>M²</Form.Label>
+                            <Form.Control
+                              type="text"
+                              placeholder="M²"
+                              name="m2"
+                              disabled={true}
+                              value={item.m2}
+                              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                atualizarItem(e, index, indexItem)
+                              }
+                            />
+                          </Form.Group>
+                        </Col>
+                        <Col>
+                          <Form.Group>
+                            <Form.Label>Valor unitário</Form.Label>
+                            <Form.Control
+                              type="text"
+                              placeholder="Valor unitário"
+                              name="valorUnitario"
+                              value={item.valorUnitario}
+                              onChange={(e: ChangeEvent<HTMLInputElement>) => (
+                                atualizarItem(e, index, indexItem),
+                                calcularM2(index, indexItem)
+                              )}
+                            />
+                          </Form.Group>
+                        </Col>
+                        <Col>
+                          <Form.Group>
+                            <Form.Label>Sub total</Form.Label>
+                            <Form.Control
+                              type="text"
+                              placeholder="Valor total"
+                              name="valorTotal"
+                              disabled={true}
+                              value={item.valorTotal}
+                            />
+                          </Form.Group>
+                        </Col>
+                      </Row>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </Card.Body>
+            </Card>
           ))}
-          <hr />
+          
           <Form.Group>
             <Form.Label>Total</Form.Label>
             <Form.Control
@@ -466,11 +492,14 @@ const Cadastro: React.FC = () => {
               // onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarModel(e)}
             />
           </Form.Group>
-          <Form.Group>
+          <div className="orcamento-button">
+            <Button onClick={back} variant="danger" size="sm">
+              Cancelar
+            </Button>
             <Button variant="primary" type="submit">
               Salvar
             </Button>
-          </Form.Group>{" "}
+          </div>
         </Form>
       </div>
     </div>
