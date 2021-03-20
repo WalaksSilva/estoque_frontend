@@ -100,6 +100,8 @@ const Cadastro: React.FC = () => {
       ...orcamento,
       [e.target.name]: e.target.value,
     });
+
+    console.log(orcamento);
   }
 
   function atualizarArea(e: ChangeEvent<HTMLInputElement>, indexArea: number) {
@@ -151,7 +153,7 @@ const Cadastro: React.FC = () => {
       orcamento.id = parseInt(id);
       const response = await orcamentoAPI.editar(id, orcamento);
     } else {
-      // const response = await orcamento.criar(model);
+      const response = await orcamentoAPI.criar(orcamento);
     }
     history.push("/orcamentos");
   };
@@ -212,9 +214,11 @@ const Cadastro: React.FC = () => {
     e: ChangeEvent<HTMLInputElement>
   ) {
     const value = { ...orcamento };
-    value.areas[indexArea].itens[indexItem].valorUnitario = parseInt(
-      e.target.value
-    );
+
+    let id = parseInt(e.target.value);
+    
+    const prod = produtos.find(x => x.id === id);
+    value.areas[indexArea].itens[indexItem].valorUnitario = prod !== undefined ? prod.valorVenda : 0;
 
     setOrcamento(value);
   }
@@ -232,7 +236,7 @@ const Cadastro: React.FC = () => {
       comprimento !== undefined &&
       largula !== undefined
     ) {
-      const m2 = comprimento * largula;
+      const m2 = parseFloat((comprimento * largula).toFixed(2));
       value.areas[indexArea].itens[indexItem].m2 = m2;
 
       value.areas[indexArea].itens[indexItem].valorTotal = calcularTotalItem(
@@ -350,8 +354,11 @@ const Cadastro: React.FC = () => {
                       <Form.Control
                         as="select"
                         defaultValue="Selecione..."
-                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                        name="idProduto"
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => (
+                          atualizarItem(e, index, indexItem),
                           setValorUnitario(index, indexItem, e)
+                        )
                         }
                       >
                         <option>Selecione...</option>
@@ -359,7 +366,7 @@ const Cadastro: React.FC = () => {
                           ? produtos.map((produto) => (
                               <option
                                 key={produto.id}
-                                value={produto.valorVenda}
+                                value={produto.id}
                               >
                                 {produto.nome}
                               </option>
@@ -373,9 +380,9 @@ const Cadastro: React.FC = () => {
                         <Form.Label>Comprimento</Form.Label>
                         <Form.Control
                           type="number"
-                          placeholder="Comprimento"
+                          placeholder="0,500"
                           name="comprimento"
-                          pattern="[0-9]{0,5}"
+                          pattern='[0-9]{0,5}'
                           value={item.comprimento}
                           onChange={(e: ChangeEvent<HTMLInputElement>) => (
                             atualizarItem(e, index, indexItem),
@@ -389,8 +396,9 @@ const Cadastro: React.FC = () => {
                         <Form.Label>Largura</Form.Label>
                         <Form.Control
                           type="number"
-                          placeholder="Largura"
+                          placeholder="0,500"
                           name="largura"
+                          pattern='[0-9]{0,5}'
                           value={item.largura}
                           onChange={(e: ChangeEvent<HTMLInputElement>) => (
                             atualizarItem(e, index, indexItem),

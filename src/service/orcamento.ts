@@ -14,7 +14,6 @@ const orcamento = {
 
     criar: async (data : any) => {
         try {
-            debugger;
             const response = await api.request.post('orcamentos', data);
             return response;
         } catch (error) {
