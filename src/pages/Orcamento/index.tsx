@@ -7,7 +7,7 @@ import {
   RouteComponentProps,
   useHistory,
 } from "react-router-dom";
-import orcamento from "../../service/orcamento";
+import orcamentoAPI from "../../service/orcamento";
 import moment from "moment";
 import "./index.css";
 
@@ -33,7 +33,7 @@ const Orcamento: React.FC = () => {
   }, []);
 
   async function carregarOrcamentos() {
-    const { data } = await orcamento.listar();
+    const { data } = await orcamentoAPI.listar();
     setOrcamentos(data);
   }
 
@@ -56,9 +56,35 @@ const Orcamento: React.FC = () => {
     history.push(`/orcamentos/detalher/${id}`);
   }
 
-  function fechar(id : number)
+  async function excluir(id : number)
   {
-    alert("Fechar");
+    const data = await orcamentoAPI.excluir(id);
+        
+    if(data.data == undefined)
+    {
+      console.log(data)
+    }
+    else if(data.data.success == true){
+
+      const values  = [...orcamentos];
+      values.splice(values.findIndex(value => value.id === id), 1);
+      setOrcamentos(values);
+    }
+    
+
+  }
+
+  async function fechar(id : number, index : number)
+  {
+    const data = await orcamentoAPI.fechar(id); 
+
+    const values  = [...orcamentos];
+
+    values[index].fechado = !values[index].fechado; 
+
+    setOrcamentos(values);
+  
+
   }
 
   return (
@@ -82,7 +108,7 @@ const Orcamento: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {orcamentos.map((item) => (
+          {orcamentos.map((item, index) => (
             <tr key={item.id}>
               <td>{item.id}</td>
               <td>{item.nome}</td>
@@ -93,16 +119,16 @@ const Orcamento: React.FC = () => {
                 </Badge>
               </td>
               <td>
-                <Button variant="primary" size="sm" onClick={() => editar(item.id)}>
+                <Button disabled={item.fechado} variant="primary" size="sm" onClick={() => editar(item.id)}>
                   Editar
                 </Button>{" "}
-                <Button variant="success" size="sm" onClick={() => fechar(item.id)}>
-                  Finalizar
+                <Button variant="success" size="sm" onClick={() => fechar(item.id, index)}>
+                  Fechar
                 </Button>{" "}
                 <Button variant="info" size="sm" onClick={() => detalhe(item.id)}>
                   Visualizar
                 </Button>{" "}
-                <Button variant="danger" size="sm">
+                <Button variant="danger" size="sm" onClick={() => excluir(item.id)}>
                   Excluir
                 </Button>
               </td>

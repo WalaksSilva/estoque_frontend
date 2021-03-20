@@ -39,9 +39,18 @@ const orcamento = {
         }
     },
 
-    excluir: async (id : string) => {
+    excluir: async (id : number) => {
         try {
             const response = await api.request.delete(`orcamentos/${id}`);
+            return response;
+        } catch (error) {
+            return error;
+        }
+    },
+
+    fechar: async (id : number) => {
+        try {
+            const response = await api.request.get(`orcamentos/fechar/${id}`);
             return response;
         } catch (error) {
             return error;

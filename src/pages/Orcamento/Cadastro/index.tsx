@@ -1,3 +1,4 @@
+import { findAllByDisplayValue } from "@testing-library/dom";
 import React, { useState, useEffect, ChangeEvent } from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import {
@@ -55,6 +56,7 @@ const Cadastro: React.FC = () => {
     }
   }, [id]);
 
+  const [validated, setValidated] = useState(false);
   const [total, setTotal] = useState<string>("");
   const history = useHistory();
   const [itens, setItens] = useState<IItem[]>([]);
@@ -301,7 +303,7 @@ const Cadastro: React.FC = () => {
 
       <div className="container">
         <br />
-        <Form onSubmit={handleSubmit}>
+        <Form noValidate validated={validated} onSubmit={handleSubmit}>
           <Row>
             <Col>
               <Form.Group>
