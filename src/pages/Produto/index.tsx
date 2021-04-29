@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Table, Badge } from 'react-bootstrap';
 import { BrowserRouter as Router, Route, Switch, RouteComponentProps, useHistory } from 'react-router-dom';
+import { tratamentoErro } from '../../Erro/tratamento';
 
 import produto from "../../service/produto";
-
-
+import swal from 'sweetalert';
   interface IProduto {
     id: number,
     nome : string,
@@ -24,9 +24,28 @@ const Produto : React.FC = ()  => {
   }, []);
 
   async function carregarProdutos() {
-    const { data } = await produto.listar();
-    setProdutos(data);
-    console.log(produtos);
+    const response = await produto.listar();
+
+    if(response.status === 200)
+    {
+      setProdutos(response.data);
+    }
+    else if(response.status !== 200)
+    {
+      const texto = tratamentoErro(response.status, response.data.errors);
+
+      await alerta("Alerta", texto?.toString(), "error")
+      
+    }
+
+  }
+
+  async function alerta(titulo : string, texto : string | undefined, icone : string) {
+    swal({
+      title: titulo,
+      text: texto?.toString(),
+      icon: icone
+    });
   }
 
   function novo()

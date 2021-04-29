@@ -3,7 +3,8 @@ import { getToken } from "./auth";
 
 
 const request = axios.create({
-  baseURL: 'https://localhost:44311/api/',
+  // baseURL: 'https://localhost:44311/api/',
+  baseURL: 'https://estoque-hml-api.azurewebsites.net/api/',
 });
 
 const api = {

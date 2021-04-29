@@ -8,7 +8,7 @@ const tipoMedida = {
             const response = await api.request.get('tipo-medidas');
             return response;
         } catch (error) {
-            return error;
+            return error.response;
         }
     },
 };

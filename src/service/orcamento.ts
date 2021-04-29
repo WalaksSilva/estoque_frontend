@@ -8,7 +8,7 @@ const orcamento = {
             const response = await api.request.get('orcamentos');
             return response;
         } catch (error) {
-            return error;
+            return error.response;
         }
     },
 
@@ -17,7 +17,7 @@ const orcamento = {
             const response = await api.request.post('orcamentos', data);
             return response;
         } catch (error) {
-            return error;
+            return error.response;
         }
     },
 
@@ -26,7 +26,7 @@ const orcamento = {
             const response = await api.request.get(`orcamentos/${id}`);
             return response;
         } catch (error) {
-            return error;
+            return error.response;
         }
     },
 
@@ -35,7 +35,7 @@ const orcamento = {
             const response = await api.request.put(`orcamentos/${id}`, data);
             return response;
         } catch (error) {
-            return error;
+            return error.response;
         }
     },
 
@@ -44,7 +44,7 @@ const orcamento = {
             const response = await api.request.delete(`orcamentos/${id}`);
             return response;
         } catch (error) {
-            return error;
+            return error.response;
         }
     },
 
@@ -53,7 +53,7 @@ const orcamento = {
             const response = await api.request.get(`orcamentos/fechar/${id}`);
             return response;
         } catch (error) {
-            return error;
+            return error.response;
         }
     },
 };

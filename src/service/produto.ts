@@ -8,7 +8,16 @@ const produto = {
             const response = await api.request.get('produtos');
             return response;
         } catch (error) {
-            return error;
+            return error.response;
+        }
+    },
+
+    listarTiposProdutos: async () => {
+        try {
+            const response = await api.request.get('produtos/tipos');
+            return response;
+        } catch (error) {
+            return error.response;
         }
     },
 
@@ -18,7 +27,7 @@ const produto = {
             const response = await api.request.post('produtos', data);
             return response;
         } catch (error) {
-            return error;
+            return error.response;
         }
     },
 
@@ -27,7 +36,7 @@ const produto = {
             const response = await api.request.get(`produtos/${id}`);
             return response;
         } catch (error) {
-            return error;
+            return error.response;
         }
     },
 
@@ -36,7 +45,7 @@ const produto = {
             const response = await api.request.put(`produtos/${id}`, data);
             return response;
         } catch (error) {
-            return error;
+            return error.response;
         }
     },
 
@@ -45,7 +54,7 @@ const produto = {
             const response = await api.request.delete(`produtos/${id}`);
             return response;
         } catch (error) {
-            return error;
+            return error.response;
         }
     },
 };

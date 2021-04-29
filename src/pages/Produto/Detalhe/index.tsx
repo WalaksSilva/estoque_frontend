@@ -8,6 +8,7 @@ import {
   useHistory,
   useParams,
 } from "react-router-dom";
+import ITipoProduto from "../../../Interface/ITipoProduto";
 import produtoAPI from "../../../service/produto";
 
 interface IProduto {
@@ -17,6 +18,7 @@ interface IProduto {
   valorPago: number | undefined;
   valorVenda: number | undefined;
   tipoMedida: ITipoMedida;
+  tipoProduto: ITipoProduto;
 }
 
 interface ITipoMedida {
@@ -34,6 +36,10 @@ const Detalhe: React.FC = () => {
     valorPago: undefined,
     valorVenda: undefined,
     tipoMedida: {
+      id: 0,
+      nome: "",
+    },
+    tipoProduto: {
       id: 0,
       nome: "",
     },
@@ -67,14 +73,27 @@ const Detalhe: React.FC = () => {
         <ListGroup variant="flush">
           <Card.Body>{produto.nome}</Card.Body>
           <ListGroup.Item>
-            Tipo de medida: <Badge variant="success">{produto.tipoMedida.nome}</Badge>
+            Tipo de produto:{" "}
+            <Badge variant="success">{produto.tipoProduto.nome}</Badge>
           </ListGroup.Item>
-          <ListGroup.Item>
-            Quantidade: <Badge variant="danger">{produto.quantidade}</Badge>
-          </ListGroup.Item>
-          <ListGroup.Item>
-            Valor pago: <Badge variant="secondary">{produto.valorPago}</Badge>
-          </ListGroup.Item>
+
+          {produto.tipoProduto.id === 1 ? (
+            <div>
+              <ListGroup.Item>
+                Tipo de medida:{" "}
+                <Badge variant="success">{produto.tipoMedida.nome}</Badge>
+              </ListGroup.Item>
+              <ListGroup.Item>
+                Quantidade: <Badge variant="danger">{produto.quantidade}</Badge>
+              </ListGroup.Item>
+              <ListGroup.Item>
+                Valor pago:{" "}
+                <Badge variant="secondary">{produto.valorPago}</Badge>
+              </ListGroup.Item>
+            </div>
+          ) : (
+            ""
+          )}
           <ListGroup.Item>
             Valor venda: <Badge variant="secondary">{produto.valorVenda}</Badge>
           </ListGroup.Item>

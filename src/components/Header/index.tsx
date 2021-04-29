@@ -1,21 +1,38 @@
-import React from "react";
-import { Nav, Navbar } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { Button, Nav, Navbar } from "react-bootstrap";
 import {
-    Link
+    Link, useHistory
 } from "react-router-dom";
+import { isAuthenticated, logout } from "../../service/auth";
 
 const Header: React.FC = () => {
+  const [disable, setDisable] = useState(false);
+  
+
+  useEffect(() => {
+    const logado = isAuthenticated();
+    setDisable(logado);
+  }, []);
+
+  const history = useHistory();
+
+  async function Sair() {
+    logout();
+    setDisable(false);
+    history.push(`/login`);
+  }
+
   return (
-    <Navbar bg="dark" variant="dark" expand="lg">
+    <Navbar hidden={!disable}  bg="dark" variant="dark" expand="lg">
       <Navbar.Brand href="#home">Estoque</Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
-          <Nav.Item className="nav-link" as={Link} to="/login" >Login</Nav.Item>
           <Nav.Item className="nav-link" as={Link} to="/" >Home</Nav.Item>
           <Nav.Item className="nav-link" as={Link} to="/produtos" >Produtos</Nav.Item>
           <Nav.Item className="nav-link" as={Link} to="/orcamentos">Orcamentos</Nav.Item>
         </Nav>
+          <Button className="float-right" variant="danger" size="sm" onClick={Sair}>Sair</Button>
       </Navbar.Collapse>
     </Navbar>
   );

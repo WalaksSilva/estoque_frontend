@@ -40,6 +40,7 @@ const Detalhe: React.FC = () => {
             m2: 0,
             valorUnitario: 0,
             valorTotal: 0,
+            produto : undefined
           },
         ],
       },
@@ -101,7 +102,7 @@ const Detalhe: React.FC = () => {
               {area.itens.map((item, index) => (
                 <tr key={index}>
                   <td>{index}</td>
-                  <td>{item.idProduto}</td>
+                  <td>{item.produto !== undefined ? item.produto.nome : ""}</td>
                   <td>
                     {item.largura} X {item.comprimento}
                   </td>

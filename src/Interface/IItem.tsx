@@ -1,3 +1,5 @@
+import IProduto from "./IProduto";
+
 interface IItem {
     id: number;
     idProduto: number;
@@ -7,6 +9,7 @@ interface IItem {
     m2: number;
     valorUnitario: number;
     valorTotal: number;
+    produto: IProduto | undefined;
   }
 
   export default IItem;

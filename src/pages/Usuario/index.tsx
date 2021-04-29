@@ -1,47 +1,93 @@
-import React, { useState } from "react";
-import { Button, Container, Form } from "react-bootstrap";
+import React, { ChangeEvent, useState } from "react";
+import { Button, Container, Form, Row } from "react-bootstrap";
+import { useHistory } from "react-router-dom";
 import api from "../../service/api";
 import { login, getToken } from "../../service/auth";
 import usuario from "../../service/usuario";
 import "./index.css";
 interface ILogin {
+  email: string;
+  password: string;
   accessToken: string;
 }
 
 const Login: React.FC = () => {
-  const [model, setModel] = useState<ILogin>({ accessToken: "" });
-  async function handleLogin() {
-    const { data } = await usuario.login({
-      email: "walaks.alves@gmail.com",
-      password: "Br@sil2020",
-    });
+  const history = useHistory();
+  const [model, setModel] = useState<ILogin>({
+    accessToken: "",
+    email: "",
+    password: "",
+  });
 
-    setModel(data);
-    login(model.accessToken);
+  const [msg, setMsg] = useState<string>("");
+
+  async function handleLogin(e: any) {
+    e.preventDefault();
+    const { data } = await usuario.login(model);
+
+    if(data == undefined)
+    {
+      setMsg("Usuário inválido!")
+    }
+    else{
+
+      // setModel(data);
+      login(data.accessToken);
+      history.push("/");
+      window.location.reload();
+    }
+    // email: "walaks.alves@gmail.com",
+    // password: "Br@sil2020",
+  }
+
+  function atualizarModel(e: ChangeEvent<HTMLInputElement>) {
+    console.log(e.target.value);
+    setModel({
+      ...model,
+      [e.target.name]: Number.isNaN(parseInt(e.target.value))
+        ? e.target.value
+        : parseInt(e.target.value),
+    });
   }
 
   return (
     <div className="container login">
-      <button onClick={handleLogin}>Login</button>
-      <Form>
+      {/* <button onClick={handleLogin}>Login</button> */}
+      <Form onSubmit={handleLogin}>
+        {/* <Row> */}
         <Form.Group controlId="formBasicEmail">
-          <Form.Label>Email address</Form.Label>
-          <Form.Control type="email" placeholder="Enter email" />
+          <Form.Label>Email</Form.Label>
+          <Form.Control
+            required={true}
+            type="text"
+            placeholder="Email"
+            name="email"
+            value={model.email}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarModel(e)}
+          />
           <Form.Text className="text-muted">
-            We'll never share your email with anyone else.
+            {msg}
           </Form.Text>
         </Form.Group>
 
         <Form.Group controlId="formBasicPassword">
-          <Form.Label>Password</Form.Label>
-          <Form.Control type="password" placeholder="Password" />
+          <Form.Label>Senha</Form.Label>
+          <Form.Control
+            required={true}
+            type="password"
+            placeholder="Password"
+            name="password"
+            value={model.password}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarModel(e)}
+          />
         </Form.Group>
-        <Form.Group controlId="formBasicCheckbox">
+        {/* <Form.Group controlId="formBasicCheckbox">
           <Form.Check type="checkbox" label="Check me out" />
-        </Form.Group>
+        </Form.Group> */}
         <Button variant="primary" type="submit">
-          Submit
+          Entrar
         </Button>
+        {/* </Row> */}
       </Form>
     </div>
   );

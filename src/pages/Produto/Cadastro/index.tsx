@@ -8,21 +8,24 @@ import {
   useHistory,
   useParams,
 } from "react-router-dom";
+import ITipoProduto from "../../../Interface/ITipoProduto";
 import produtoAPI from "../../../service/produto";
 import tipoMedidaAPI from "../../../service/tipoMedida";
 
 interface IProduto {
   id?: number | undefined;
   idTipoMedida?: number | undefined;
+  idTipoProduto?: number | undefined;
   nome?: string;
   quantidade?: number | undefined;
   valorPago?: number | undefined;
   valorVenda?: number | undefined;
+  foto?: string;
 }
 
 interface ITipoMedida {
-  id: number,
-  nome: string
+  id: number;
+  nome: string;
 }
 
 const Cadastro: React.FC = () => {
@@ -31,17 +34,23 @@ const Cadastro: React.FC = () => {
   const [produto, setProduto] = useState<IProduto>({
     id: 0,
     idTipoMedida: undefined,
+    idTipoProduto: undefined,
     nome: "",
     quantidade: undefined,
     valorPago: undefined,
     valorVenda: undefined,
+    foto: ""
   });
+  const [tipoProdutos, setTipoProdutos] = useState<ITipoProduto[]>([]);
 
   const history = useHistory();
   const { id } = useParams<{ id: string }>();
 
+  let teste = false;
+
   useEffect(() => {
     carregarDados();
+    carregarTipoProdutos();
     carregarTipoMedidas();
     if (id !== undefined) {
       recuperarProduto();
@@ -63,6 +72,11 @@ const Cadastro: React.FC = () => {
     setProduto(data);
   }
 
+  async function carregarTipoProdutos() {
+    const { data } = await produtoAPI.listarTiposProdutos();
+    setTipoProdutos(data);
+  }
+
   function back() {
     history.goBack();
   }
@@ -71,15 +85,26 @@ const Cadastro: React.FC = () => {
     console.log(e.target.value);
     setProduto({
       ...produto,
-      [e.target.name]: (Number.isNaN(parseInt(e.target.value)) ? e.target.value : parseInt(e.target.value)), 
+      [e.target.name]: Number.isNaN(parseInt(e.target.value))
+        ? e.target.value
+        : parseInt(e.target.value),
     });
   }
 
-  async function onSubmit(e: any){
+  async function onSubmit(e: any) {
     e.preventDefault();
-    await produtoAPI.editar(id, produto);
+
+    if(id !== undefined)
+    {
+      await produtoAPI.editar(id, produto);
+    }
+    else
+    {
+      await produtoAPI.criar(produto);
+    }
+
     history.push("/produtos");
-  };
+  }
 
   return (
     <div className="container">
@@ -110,48 +135,109 @@ const Cadastro: React.FC = () => {
             </Form.Group>
           </Col>
           <Col>
-            <Form.Label>Tipo de medida</Form.Label>
-            <Form.Control as="select" defaultValue="Selecione..." name="idTipoMedida" onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarModel(e)}>
+            <Form.Label>Tipo de produto</Form.Label>
+            <Form.Control
+              as="select"
+              defaultValue="Selecione..."
+              name="idTipoProduto"
+              onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarModel(e)}
+            >
               <option>Selecione...</option>
-              {tipoMedidas.map((item) => (
-                <option selected={produto.idTipoMedida == item.id} key={item.id} value={item.id}>{item.nome}</option>
+              {tipoProdutos.map((item) => (
+                <option
+                  selected={produto.idTipoProduto == item.id}
+                  key={item.id}
+                  value={item.id}
+                >
+                  {item.nome}
+                </option>
               ))}
             </Form.Control>
           </Col>
+          {produto.idTipoProduto === 1 ? (
+            <Col>
+              <Form.Label>Tipo de medida</Form.Label>
+              <Form.Control
+                as="select"
+                defaultValue="Selecione..."
+                name="idTipoMedida"
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  atualizarModel(e)
+                }
+              >
+                <option>Selecione...</option>
+                {tipoMedidas.map((item) => (
+                  <option
+                    selected={produto.idTipoMedida == item.id}
+                    key={item.id}
+                    value={item.id}
+                  >
+                    {item.nome}
+                  </option>
+                ))}
+              </Form.Control>
+            </Col>
+          ) : (
+            ""
+          )}
         </Row>
-        <Row>
-          <Col>
-            <Form.Label>Quantidade</Form.Label>
-            <Form.Control
-              type="number"
-              placeholder="Quantidade"
-              name="quantidade"
-              value={produto.quantidade}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarModel(e)}
-            />
-          </Col>
-          <Col>
-            <Form.Label>Valor pago</Form.Label>
-            <Form.Control
-              type="number"
-              placeholder="Valor pago"
-              name="valorPago"
-              value={produto.valorPago}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarModel(e)}
-            />
-          </Col>
-          <Col>
-            <Form.Label>Valor venda</Form.Label>
-            <Form.Control
-              type="number"
-              placeholder="Valor venda"
-              name="valorVenda"
-              pattern='[0-9]{0,5}'
-              value={produto.valorVenda}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarModel(e)}
-            />
-          </Col>
-        </Row>
+        {produto.idTipoProduto === 1 ? (
+          <Row>
+            <Col>
+              <Form.Label>Quantidade</Form.Label>
+              <Form.Control
+                type="number"
+                placeholder="Quantidade"
+                name="quantidade"
+                value={produto.quantidade}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  atualizarModel(e)
+                }
+              />
+            </Col>
+            <Col>
+              <Form.Label>Valor pago</Form.Label>
+              <Form.Control
+                type="number"
+                placeholder="Valor pago"
+                name="valorPago"
+                value={produto.valorPago}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  atualizarModel(e)
+                }
+              />
+            </Col>
+            <Col>
+              <Form.Label>Valor</Form.Label>
+              <Form.Control
+                type="number"
+                placeholder="Valor venda"
+                name="valorVenda"
+                pattern="[0-9]{0,5}"
+                value={produto.valorVenda}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  atualizarModel(e)
+                }
+              />
+            </Col>
+          </Row>
+        ) : (
+          <Row>
+            <Col>
+              <Form.Label>Valor</Form.Label>
+              <Form.Control
+                type="number"
+                placeholder="Valor venda"
+                name="valorVenda"
+                pattern="[0-9]{0,5}"
+                value={produto.valorVenda}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  atualizarModel(e)
+                }
+              />
+            </Col>
+          </Row>
+        )}
         <br />
         <Form.Group>
           <Button variant="primary" type="submit">

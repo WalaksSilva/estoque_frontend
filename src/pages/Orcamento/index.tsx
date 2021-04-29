@@ -10,6 +10,8 @@ import {
 import orcamentoAPI from "../../service/orcamento";
 import moment from "moment";
 import "./index.css";
+import { tratamentoErro } from "../../Erro/tratamento";
+import swal from 'sweetalert';
 
 const Orcamento: React.FC = () => {
   interface IOrcamento {
@@ -33,8 +35,27 @@ const Orcamento: React.FC = () => {
   }, []);
 
   async function carregarOrcamentos() {
-    const { data } = await orcamentoAPI.listar();
-    setOrcamentos(data);
+    const response = await orcamentoAPI.listar();
+
+    if(response.status === 200)
+    {
+      setOrcamentos(response.data);
+    }
+    else if(response.status !== 200)
+    {
+      const texto = tratamentoErro(response.status, response.data.errors);
+
+      await alerta("Alerta", texto?.toString(), "error")
+      
+    }
+  }
+
+  async function alerta(titulo : string, texto : string | undefined, icone : string) {
+    swal({
+      title: titulo,
+      text: texto?.toString(),
+      icon: icone
+    });
   }
 
   function formarData(data: Date) {
