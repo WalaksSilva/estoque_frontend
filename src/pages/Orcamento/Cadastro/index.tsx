@@ -175,7 +175,7 @@ const Cadastro: React.FC = () => {
       
       if(response.status === 200)
       {
-        history.push("/orcamentos");
+        history.push("/orcamentos", "Operação realizada com sucesso.");
       }
       else if(response.status !== 200)
       {
@@ -190,7 +190,7 @@ const Cadastro: React.FC = () => {
 
       if(response.status === 200)
       {
-        history.push("/orcamentos");
+        history.push("/orcamentos", "Operação realizada com sucesso.");
       }
       else if(response.status !== 200)
       {

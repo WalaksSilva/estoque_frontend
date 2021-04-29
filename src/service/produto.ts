@@ -49,7 +49,7 @@ const produto = {
         }
     },
 
-    excluir: async (id : string) => {
+    excluir: async (id : number) => {
         try {
             const response = await api.request.delete(`produtos/${id}`);
             return response;

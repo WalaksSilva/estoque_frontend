@@ -8,9 +8,11 @@ import {
   useHistory,
   useParams,
 } from "react-router-dom";
+import { tratamentoErro } from "../../../Erro/tratamento";
 import ITipoProduto from "../../../Interface/ITipoProduto";
 import produtoAPI from "../../../service/produto";
 import tipoMedidaAPI from "../../../service/tipoMedida";
+import swal from 'sweetalert';
 
 interface IProduto {
   id?: number | undefined;
@@ -96,14 +98,46 @@ const Cadastro: React.FC = () => {
 
     if(id !== undefined)
     {
-      await produtoAPI.editar(id, produto);
+      const response = await produtoAPI.editar(id, produto);
+
+      if(response.status === 200)
+      {
+        history.push("/produtos", "Operação realizada com sucesso.");
+      }
+      else if(response.status !== 200)
+      {
+        const texto = tratamentoErro(response.status, response.data.errors);
+
+        await alerta("Alerta", texto?.toString(), "error")
+        
+      }
     }
     else
     {
-      await produtoAPI.criar(produto);
+      const response = await produtoAPI.criar(produto);
+
+      if(response.status === 200)
+      {
+        history.push("/produtos", "Operação realizada com sucesso.");
+      }
+      else if(response.status !== 200)
+      {
+        const texto = tratamentoErro(response.status, response.data.errors);
+
+        await alerta("Alerta", texto?.toString(), "error")
+        
+      }
+
     }
 
-    history.push("/produtos");
+  }
+
+  async function alerta(titulo : string, texto : string | undefined, icone : string) {
+    swal({
+      title: "Alerta",
+      text: texto?.toString(),
+      icon: "error"
+    });
   }
 
   return (

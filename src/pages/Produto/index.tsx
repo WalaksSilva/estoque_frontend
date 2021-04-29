@@ -14,13 +14,21 @@ import swal from 'sweetalert';
     valorVenda : number,
 }
 
-const Produto : React.FC = ()  => {
+const Produto : React.FC = (props: any)  => {
 
   const [produtos, setProdutos] = useState<IProduto[]>([]);
   const history = useHistory();
 
   useEffect(() => {
+
+    let msg = props?.location?.state;
+    if (msg !== undefined) {
+      alerta("", msg, "success");
+    }
+    history.replace(props.location.pathname, undefined);
+
     carregarProdutos();
+
   }, []);
 
   async function carregarProdutos() {
@@ -63,11 +71,27 @@ const Produto : React.FC = ()  => {
     history.push(`/produtos/detalher/${id}`);
   }
 
-  function excluir(id : number)
+  async function excluir(id : number)
   {
-    const values  = [...produtos];
-    values.splice(values.findIndex(value => value.id === id), 1);
-    setProdutos(values);
+    const response = await produto.excluir(id);
+
+    if(response.status === 200)
+    {
+      const values  = [...produtos];
+      values.splice(values.findIndex(value => value.id === id), 1);
+      setProdutos(values);
+
+      await alerta("", "Operação realizada com sucesso.", "success")
+    }
+    else if(response.status !== 200)
+    {
+      const texto = tratamentoErro(response.status, response.data.errors);
+
+      await alerta("Alerta", texto?.toString(), "error")
+      
+    }
+
+    
   }
 
   return (
