@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Route, Switch, RouteComponentProps } from 'rea
 const Home : React.FC = ()  => {
   return (
     <div >
-      <p>Home</p>
     </div>
   )
 }

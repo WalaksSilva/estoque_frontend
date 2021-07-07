@@ -11,7 +11,7 @@ import {
 } from "react-router-dom";
 import orcamentoAPI from "../../../service/orcamento";
 import produto from "../../../service/produto";
-import swal from 'sweetalert';
+import swal from "sweetalert";
 
 import "./index.css";
 import { tratamentoErro } from "../../../Erro/tratamento";
@@ -35,6 +35,8 @@ interface IItem {
   valorUnitario: number;
   valorTotal: number;
   material: boolean;
+  quantidade: number;
+  descricao: string | undefined;
 }
 
 interface IArea {
@@ -76,7 +78,9 @@ const Cadastro: React.FC = () => {
     m2: 0,
     valorUnitario: 0,
     valorTotal: 0,
-    material: true
+    material: true,
+    quantidade: 1,
+    descricao: undefined,
   });
   const [areas, setAreas] = useState<IArea[]>([]);
   const [idServicos, setIdServicos] = useState<number[]>([]);
@@ -96,14 +100,16 @@ const Cadastro: React.FC = () => {
           {
             id: 0,
             idProduto: 0,
-            produto : undefined,
+            produto: undefined,
             nome: "",
             largura: undefined,
             comprimento: undefined,
             m2: 0,
             valorUnitario: 0,
             valorTotal: 0,
-            material: true
+            material: true,
+            quantidade: 1,
+            descricao: undefined,
           },
         ],
       },
@@ -136,11 +142,16 @@ const Cadastro: React.FC = () => {
     indexItem: number
   ) {
     const value = { ...orcamento };
-
     const keyName = e.target.name;
-    if (keyName === "nome") {
+
+    if (keyName === "quantidade" && e.target.value === "") {
+      value.areas[indexArea].itens[indexItem][keyName] = 1;
+    }
+
+    if (keyName === "nome" || keyName === "descricao") {
       value.areas[indexArea].itens[indexItem][keyName] = e.target.value;
     } else if (
+      keyName === "quantidade" ||
       keyName === "comprimento" ||
       keyName === "largura" ||
       keyName === "idProduto" ||
@@ -172,55 +183,47 @@ const Cadastro: React.FC = () => {
     if (id !== undefined) {
       orcamento.id = parseInt(id);
       const response = await orcamentoAPI.editar(id, orcamento);
-      
-      if(response.status === 200)
-      {
+
+      if (response.status === 200) {
         history.push("/orcamentos", "Operação realizada com sucesso.");
-      }
-      else if(response.status !== 200)
-      {
+      } else if (response.status !== 200) {
         const texto = tratamentoErro(response.status, response.data.errors);
 
-        await alerta("Alerta", texto?.toString(), "error")
-        
+        await alerta("Alerta", texto?.toString(), "error");
       }
     } else {
-
       const response = await orcamentoAPI.criar(orcamento);
 
-      if(response.status === 200)
-      {
+      if (response.status === 200) {
         history.push("/orcamentos", "Operação realizada com sucesso.");
-      }
-      else if(response.status !== 200)
-      {
+      } else if (response.status !== 200) {
         const texto = tratamentoErro(response.status, response.data.errors);
 
-        await alerta("Alerta", texto?.toString(), "error")
-        
+        await alerta("Alerta", texto?.toString(), "error");
       }
     }
   };
 
-  async function alerta(titulo : string, texto : string | undefined, icone : string) {
+  async function alerta(
+    titulo: string,
+    texto: string | undefined,
+    icone: string
+  ) {
     swal({
       title: "Alerta",
       text: texto?.toString(),
-      icon: "error"
+      icon: "error",
     });
   }
 
   async function recuperarOrcamento() {
     const { data } = await orcamentoAPI.recuperar(id);
 
-    data.areas.forEach((it : IArea) => {
-      it.itens.forEach((i : IItem) => {
-        if(i.produto !== undefined && i.produto?.idTipoProduto == 2)
-        {
+    data.areas.forEach((it: IArea) => {
+      it.itens.forEach((i: IItem) => {
+        if (i.produto !== undefined && i.produto?.idTipoProduto == 2) {
           i.material = false;
-        }
-        else
-        {
+        } else {
           i.material = true;
         }
       });
@@ -253,7 +256,9 @@ const Cadastro: React.FC = () => {
           m2: 0,
           valorUnitario: 0,
           valorTotal: 0,
-          material: true
+          material: true,
+          quantidade: 1,
+          descricao: "",
         },
       ],
     });
@@ -274,7 +279,9 @@ const Cadastro: React.FC = () => {
       m2: 0,
       valorUnitario: 0,
       valorTotal: 0,
-      material: true
+      material: true,
+      quantidade: 1,
+      descricao: "",
     });
 
     setOrcamento(value);
@@ -290,52 +297,61 @@ const Cadastro: React.FC = () => {
     let id = parseInt(e.target.value);
 
     const prod = produtos.find((x) => x.id === id);
-    value.areas[indexArea].itens[indexItem].valorUnitario = prod !== undefined ? prod.valorVenda : 0;
+    value.areas[indexArea].itens[indexItem].valorUnitario =
+      prod !== undefined ? prod.valorVenda : 0;
 
     if (prod !== undefined && prod.idTipoProduto == 2) {
-      value.areas[indexArea].itens[indexItem].valorTotal = prod !== undefined ? prod.valorVenda : 0;
-      
-        value.areas[indexArea].itens[indexItem].comprimento = 0;
-        value.areas[indexArea].itens[indexItem].largura = 0;
-        value.areas[indexArea].itens[indexItem].m2 = 0;
-        value.areas[indexArea].itens[indexItem].material = false;
-        value.areas[indexArea].itens[indexItem].valorTotal = prod !== undefined ? prod.valorVenda : 0;
-        
-      }
-      else
-      {
-        value.areas[indexArea].itens[indexItem].material = true;
-      }
+      value.areas[indexArea].itens[indexItem].valorTotal =
+        prod !== undefined ? prod.valorVenda : 0;
+
+      const quantidade = value.areas[indexArea].itens[indexItem].quantidade;
+
+      value.areas[indexArea].itens[indexItem].comprimento = 0;
+      value.areas[indexArea].itens[indexItem].largura = 0;
+      value.areas[indexArea].itens[indexItem].m2 = 0;
+      value.areas[indexArea].itens[indexItem].material = false;
+      value.areas[indexArea].itens[indexItem].valorTotal =
+        prod !== undefined ? prod.valorVenda * quantidade : 0;
+    } else {
+      value.areas[indexArea].itens[indexItem].material = true;
+    }
 
     setOrcamento(value);
   }
 
   function calcularM2(indexArea: number, indexItem: number) {
     const value = { ...orcamento };
-    
-      const comprimento = value.areas[indexArea].itens[indexItem].comprimento;
-      const largula = value.areas[indexArea].itens[indexItem].largura;
-      const valorUnitario = value.areas[indexArea].itens[indexItem].valorUnitario;
 
-      if (
-        !Number.isNaN(comprimento) &&
-        !Number.isNaN(largula) &&
-        comprimento !== undefined &&
-        largula !== undefined
-      ) {
-        const m2 = parseFloat((comprimento * largula).toFixed(2));
-        value.areas[indexArea].itens[indexItem].m2 = m2;
+    const quantidade = value.areas[indexArea].itens[indexItem].quantidade;
+    const comprimento = value.areas[indexArea].itens[indexItem].comprimento;
+    const largula = value.areas[indexArea].itens[indexItem].largura;
+    const valorUnitario = value.areas[indexArea].itens[indexItem].valorUnitario;
 
+    if (
+      !Number.isNaN(comprimento) &&
+      !Number.isNaN(largula) &&
+      comprimento !== undefined &&
+      largula !== undefined
+    ) {
+      const m2 = parseFloat((comprimento * largula * quantidade).toFixed(2));
+      value.areas[indexArea].itens[indexItem].m2 = m2;
 
-        value.areas[indexArea].itens[indexItem].valorTotal = calcularTotalItem(
-          m2,
-          valorUnitario
-        );
+      const totalItem = calcularTotalItem(m2, valorUnitario);
+
+      debugger;
+
+      if(m2 === 0)
+      {
+        value.areas[indexArea].itens[indexItem].valorTotal = totalItem * quantidade;
+      }
+      else{
+        value.areas[indexArea].itens[indexItem].valorTotal = totalItem;
       }
 
-      setOrcamento(value);
-      calcularTotal();
-    
+    }
+
+    setOrcamento(value);
+    calcularTotal();
   }
 
   function calcularTotalItem(m2: number, valor: number) {
@@ -452,13 +468,30 @@ const Cadastro: React.FC = () => {
                       </Form.Group>
                     </Col>
                   </Row>
+                  <hr />
 
                   {area.itens.map((item, indexItem) => (
                     <div key={indexItem}>
                       <Row>
                         <Col>
-                          <Form.Label>Produtos</Form.Label>
+                          <Form.Group>
+                            <Form.Label>Descrição</Form.Label>
+                            <Form.Control
+                              type="text"
+                              placeholder="LAVATÓRIO"
+                              name="descricao"
+                              value={item.descricao}
+                              min="0"
+                              step="any"
+                              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                atualizarItem(e, index, indexItem)
+                              }
+                            />
+                          </Form.Group>
+                        </Col>
 
+                        <Col>
+                          <Form.Label>Produtos</Form.Label>
                           <Form.Control
                             as="select"
                             defaultValue="Selecione..."
@@ -485,6 +518,26 @@ const Cadastro: React.FC = () => {
                               : "Loading..."}
                           </Form.Control>
                         </Col>
+                      </Row>
+                      <Row>
+                        <Col>
+                          <Form.Group>
+                            <Form.Label>Quantidade</Form.Label>
+                            <Form.Control
+                              type="number"
+                              placeholder=""
+                              name="quantidade"
+                              value={item.quantidade}
+                              pattern="[0-9]+([,\.][0-9]+)?"
+                              min="0"
+                              step="any"
+                              onChange={(e: ChangeEvent<HTMLInputElement>) => (
+                                atualizarItem(e, index, indexItem),
+                                calcularM2(index, indexItem)
+                              )}
+                            />
+                          </Form.Group>
+                        </Col>
 
                         <Col>
                           <Form.Group>
@@ -494,8 +547,8 @@ const Cadastro: React.FC = () => {
                               placeholder="0,500"
                               name="comprimento"
                               value={item.comprimento}
-                              pattern="[0-9]+([,\.][0-9]+)?" 
-                              min="0" 
+                              pattern="[0-9]+([,\.][0-9]+)?"
+                              min="0"
                               step="any"
                               disabled={!item.material}
                               onChange={(e: ChangeEvent<HTMLInputElement>) => (
@@ -505,6 +558,7 @@ const Cadastro: React.FC = () => {
                             />
                           </Form.Group>
                         </Col>
+
                         <Col>
                           <Form.Group>
                             <Form.Label>Largura</Form.Label>
@@ -513,8 +567,8 @@ const Cadastro: React.FC = () => {
                               placeholder="0,500"
                               name="largura"
                               value={item.largura}
-                              pattern="[0-9]+([,\.][0-9]+)?" 
-                              min="0" 
+                              pattern="[0-9]+([,\.][0-9]+)?"
+                              min="0"
                               step="any"
                               disabled={!item.material}
                               onChange={(e: ChangeEvent<HTMLInputElement>) => (
@@ -547,7 +601,6 @@ const Cadastro: React.FC = () => {
                               placeholder="Valor unitário"
                               name="valorUnitario"
                               value={item.valorUnitario}
-                              disabled={!item.material}
                               onChange={(e: ChangeEvent<HTMLInputElement>) => (
                                 atualizarItem(e, index, indexItem),
                                 calcularM2(index, indexItem)
@@ -563,11 +616,15 @@ const Cadastro: React.FC = () => {
                               placeholder="Valor total"
                               name="valorTotal"
                               disabled={true}
-                              value={item.valorTotal}
+                              value={item.valorTotal.toLocaleString("pt-BR", {
+                                style: "currency",
+                                currency: "BRL",
+                              })}
                             />
                           </Form.Group>
                         </Col>
                       </Row>
+                      <hr />
                     </div>
                   ))}
                 </div>
@@ -575,25 +632,29 @@ const Cadastro: React.FC = () => {
             </Card>
           ))}
 
-          <Form.Group>
-            <Form.Label>Total</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Total"
-              name="total"
-              disabled={true}
-              value={total}
-              // onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarModel(e)}
-            />
-          </Form.Group>
-          <div className="orcamento-button">
-            <Button onClick={back} variant="danger" size="sm">
-              Cancelar
-            </Button>
-            <Button variant="primary" type="submit">
-              Salvar
-            </Button>
-          </div>
+          <Card>
+            <Card.Body>
+              <Form.Group>
+                <Form.Label>Total</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Total"
+                  name="total"
+                  disabled={true}
+                  value={total}
+                  // onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarModel(e)}
+                />
+              </Form.Group>
+              <div className="orcamento-button">
+                <Button onClick={back} variant="danger" size="sm">
+                  Cancelar
+                </Button>
+                <Button variant="primary" type="submit">
+                  Salvar
+                </Button>
+              </div>
+            </Card.Body>
+          </Card>
         </Form>
       </div>
     </div>

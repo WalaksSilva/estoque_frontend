@@ -93,6 +93,18 @@ const Cadastro: React.FC = () => {
     });
   }
 
+  function resetValue() {
+    const value = { ...produto };
+
+    value.quantidade = undefined;
+
+    setProduto(
+      value
+    );
+
+    console.log(produto);
+  }
+
   async function onSubmit(e: any) {
     e.preventDefault();
 
@@ -174,7 +186,10 @@ const Cadastro: React.FC = () => {
               as="select"
               defaultValue="Selecione..."
               name="idTipoProduto"
-              onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarModel(e)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => (
+                resetValue(),
+                atualizarModel(e)
+              )}
             >
               <option>Selecione...</option>
               {tipoProdutos.map((item) => (
