@@ -41,6 +41,7 @@ interface IItem {
 
 interface IArea {
   nome: string | any;
+  total: number;
   itens: IItem[];
 }
 
@@ -95,6 +96,7 @@ const Cadastro: React.FC = () => {
       ...areas,
       {
         nome: "",
+        total: 0,
         itens: [
           ...itens,
           {
@@ -121,8 +123,6 @@ const Cadastro: React.FC = () => {
       ...orcamento,
       [e.target.name]: e.target.value,
     });
-
-    console.log(orcamento);
   }
 
   function atualizarArea(e: ChangeEvent<HTMLInputElement>, indexArea: number) {
@@ -182,6 +182,9 @@ const Cadastro: React.FC = () => {
 
     if (id !== undefined) {
       orcamento.id = parseInt(id);
+
+      orcamento.areas.map((area) => area.itens.map((item) => item.produto = undefined));
+
       const response = await orcamentoAPI.editar(id, orcamento);
 
       if (response.status === 200) {
@@ -244,6 +247,7 @@ const Cadastro: React.FC = () => {
 
     value.areas.push({
       nome: "",
+      total: 0,
       itens: [
         ...itens,
         {
@@ -285,6 +289,27 @@ const Cadastro: React.FC = () => {
     });
 
     setOrcamento(value);
+  }
+
+  function excluirItem(indexArea: number, indexItem: number)
+  {
+    //Chamar serviço para excluir item
+    const value = { ...orcamento };
+    debugger;
+    value.areas[indexArea].itens.splice(
+      indexItem,
+      1
+    );
+
+    orcamento.areas[indexArea].itens.splice(
+      indexItem,
+      1
+    );
+
+    setOrcamento(value);
+
+    calcularTotal();
+    calcularTotalArea(indexArea);
   }
 
   function setValorUnitario(
@@ -338,8 +363,6 @@ const Cadastro: React.FC = () => {
 
       const totalItem = calcularTotalItem(m2, valorUnitario);
 
-      debugger;
-
       if(m2 === 0)
       {
         value.areas[indexArea].itens[indexItem].valorTotal = totalItem * quantidade;
@@ -347,11 +370,24 @@ const Cadastro: React.FC = () => {
       else{
         value.areas[indexArea].itens[indexItem].valorTotal = totalItem;
       }
-
     }
 
     setOrcamento(value);
     calcularTotal();
+    calcularTotalArea(indexArea);
+  }
+
+  function calcularTotalArea(indexArea: number)
+  {
+    const orc = { ...orcamento };
+    let total: number = 0;
+
+    orcamento.areas[indexArea].itens.map((item) => 
+      total += item.valorTotal
+    )
+
+    orc.areas[indexArea].total = total;
+    setOrcamento(orc);
   }
 
   function calcularTotalItem(m2: number, valor: number) {
@@ -359,6 +395,8 @@ const Cadastro: React.FC = () => {
   }
 
   function calcularTotal() {
+    debugger;
+
     const orc = { ...orcamento };
     let total: number = 0;
     orcamento.areas.map((area) =>
@@ -374,6 +412,7 @@ const Cadastro: React.FC = () => {
     );
 
     orc.total = total;
+    orcamento.total = total;
 
     setOrcamento(orc);
   }
@@ -472,6 +511,18 @@ const Cadastro: React.FC = () => {
 
                   {area.itens.map((item, indexItem) => (
                     <div key={indexItem}>
+                      <Row>
+                    <Col>
+                      <Button
+                        className="float-right"
+                        onClick={() => excluirItem(index, indexItem)}
+                        variant="danger"
+                        size="sm"
+                      >
+                        Excluir
+                      </Button>
+                    </Col>
+                  </Row>
                       <Row>
                         <Col>
                           <Form.Group>
@@ -627,6 +678,14 @@ const Cadastro: React.FC = () => {
                       <hr />
                     </div>
                   ))}
+                </div>
+                <div className="float-right">
+                  <b>
+                  {area.total.toLocaleString("pt-BR", {
+                                style: "currency",
+                                currency: "BRL",
+                              })}
+                              </b>
                 </div>
               </Card.Body>
             </Card>
