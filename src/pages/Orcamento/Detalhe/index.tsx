@@ -145,7 +145,7 @@ const Detalhe: React.FC = () => {
                 <td>{item.largura == 0 ? "" : item.largura}</td>
                 <td>{item.m2 == 0 ? "" : item.m2 / item.quantidade}</td>
                 <td>{item.m2 == 0 ? "" : item.m2}</td>
-                <td>{item.produto.valorVenda}</td>
+                <td>{item.valorUnitario}</td>
                 <td>{item.valorTotal.toLocaleString("pt-BR", {
                                 style: "currency",
                                 currency: "BRL",

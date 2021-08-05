@@ -1,6 +1,10 @@
 .login{
-    display: flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   height: 100vh;
+}
+
+img{
+  width: 40px;
 }

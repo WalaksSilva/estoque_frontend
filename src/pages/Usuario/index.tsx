@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useState } from "react";
-import { Button, Container, Form, Row } from "react-bootstrap";
+import { Button, Container, Form, Row, Image } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
 import api from "../../service/api";
 import { login, getToken } from "../../service/auth";
@@ -20,20 +20,25 @@ const Login: React.FC = () => {
   });
 
   const [msg, setMsg] = useState<string>("");
+  const [loading, setLoading] = useState(false);
 
   async function handleLogin(e: any) {
+    setLoading(true);
+
     e.preventDefault();
     const { data } = await usuario.login(model);
 
     if(data == undefined)
     {
       setMsg("Usuário inválido!")
+      setLoading(false);
     }
     else{
 
       // setModel(data);
       login(data.accessToken);
       history.push("/");
+      setLoading(false);
       window.location.reload();
     }
     // email: "walaks.alves@gmail.com",
@@ -84,9 +89,12 @@ const Login: React.FC = () => {
         {/* <Form.Group controlId="formBasicCheckbox">
           <Form.Check type="checkbox" label="Check me out" />
         </Form.Group> */}
-        <Button variant="primary" type="submit">
+        <Button hidden={loading} variant="primary" type="submit">
           Entrar
         </Button>
+        <div>
+          <Image hidden={!loading} src={window.location.origin + "/loading2.gif"} rounded />
+        </div>
         {/* </Row> */}
       </Form>
     </div>
