@@ -1,5 +1,5 @@
 interface IProduto {
-    id?: number | undefined;
+  id?: number | undefined;
   idTipoMedida?: number | undefined;
   idTipoProduto?: number | undefined;
   nome?: string;
@@ -7,6 +7,6 @@ interface IProduto {
   valorPago?: number | undefined;
   valorVenda?: number | undefined;
   foto?: string;
-  }
+}
 
-  export default IProduto;
+export default IProduto;

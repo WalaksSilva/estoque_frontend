@@ -11,6 +11,9 @@ import {
 } from "react-router-dom";
 import orcamentoAPI from "../../../service/orcamento";
 import produto from "../../../service/produto";
+import areaAPI from "../../../service/area";
+import itemAPI from "../../../service/item";
+
 import swal from "sweetalert";
 
 import "./index.css";
@@ -291,20 +294,23 @@ const Cadastro: React.FC = () => {
     setOrcamento(value);
   }
 
-  function excluirItem(indexArea: number, indexItem: number)
+  async function excluirItem(indexArea: number, indexItem: number)
   {
-    //Chamar serviço para excluir item
     const value = { ...orcamento };
+    
     debugger;
+    var id = value.areas[indexArea].itens[indexItem].id;
+    const response = await itemAPI.excluir(id);
+
     value.areas[indexArea].itens.splice(
       indexItem,
       1
     );
 
-    orcamento.areas[indexArea].itens.splice(
-      indexItem,
-      1
-    );
+    // orcamento.areas[indexArea].itens.splice(
+    //   indexItem,
+    //   1
+    // );
 
     setOrcamento(value);
 
