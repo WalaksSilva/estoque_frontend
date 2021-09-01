@@ -37,7 +37,7 @@ const Login: React.FC = () => {
 
       // setModel(data);
       login(data.accessToken);
-      history.push("/");
+      history.push("/orcamentos");
       setLoading(false);
       window.location.reload();
     }

@@ -24,6 +24,7 @@ interface IOrcamento {
   nome: string;
   cpfCnpj: string;
   total: number;
+  desconto: number;
   areas: IArea[];
 }
 
@@ -70,6 +71,7 @@ const Cadastro: React.FC = () => {
   const [validated, setValidated] = useState(false);
   const [disable, setDisable] = useState(false);
   const [total, setTotal] = useState<string>("");
+  const [desconto, setDesconto] = useState<string>("");
   const history = useHistory();
   const [itens, setItens] = useState<IItem[]>([]);
   const [item, setItem] = useState<IItem>({
@@ -95,6 +97,7 @@ const Cadastro: React.FC = () => {
     nome: "",
     cpfCnpj: "",
     total: 0,
+    desconto: 0,
     areas: [
       ...areas,
       {
@@ -144,6 +147,8 @@ const Cadastro: React.FC = () => {
     indexArea: number,
     indexItem: number
   ) {
+
+    debugger;
     const value = { ...orcamento };
     const keyName = e.target.name;
 
@@ -162,6 +167,7 @@ const Cadastro: React.FC = () => {
       keyName === "valorUnitario" ||
       keyName === "valorTotal"
     ) {
+      
       value.areas[indexArea].itens[indexItem][keyName] = parseFloat(
         e.target.value
       );
@@ -186,7 +192,9 @@ const Cadastro: React.FC = () => {
     if (id !== undefined) {
       orcamento.id = parseInt(id);
 
-      orcamento.areas.map((area) => area.itens.map((item) => item.produto = undefined));
+      orcamento.areas.map((area) =>
+        area.itens.map((item) => (item.produto = undefined))
+      );
 
       const response = await orcamentoAPI.editar(id, orcamento);
 
@@ -294,18 +302,14 @@ const Cadastro: React.FC = () => {
     setOrcamento(value);
   }
 
-  async function excluirItem(indexArea: number, indexItem: number)
-  {
+  async function excluirItem(indexArea: number, indexItem: number) {
     const value = { ...orcamento };
-    
+
     debugger;
     var id = value.areas[indexArea].itens[indexItem].id;
     const response = await itemAPI.excluir(id);
 
-    value.areas[indexArea].itens.splice(
-      indexItem,
-      1
-    );
+    value.areas[indexArea].itens.splice(indexItem, 1);
 
     // orcamento.areas[indexArea].itens.splice(
     //   indexItem,
@@ -369,11 +373,10 @@ const Cadastro: React.FC = () => {
 
       const totalItem = calcularTotalItem(m2, valorUnitario);
 
-      if(m2 === 0)
-      {
-        value.areas[indexArea].itens[indexItem].valorTotal = totalItem * quantidade;
-      }
-      else{
+      if (m2 === 0) {
+        value.areas[indexArea].itens[indexItem].valorTotal =
+          totalItem * quantidade;
+      } else {
         value.areas[indexArea].itens[indexItem].valorTotal = totalItem;
       }
     }
@@ -383,14 +386,11 @@ const Cadastro: React.FC = () => {
     calcularTotalArea(indexArea);
   }
 
-  function calcularTotalArea(indexArea: number)
-  {
+  function calcularTotalArea(indexArea: number) {
     const orc = { ...orcamento };
     let total: number = 0;
 
-    orcamento.areas[indexArea].itens.map((item) => 
-      total += item.valorTotal
-    )
+    orcamento.areas[indexArea].itens.map((item) => (total += item.valorTotal));
 
     orc.areas[indexArea].total = total;
     setOrcamento(orc);
@@ -421,6 +421,10 @@ const Cadastro: React.FC = () => {
     orcamento.total = total;
 
     setOrcamento(orc);
+  }
+
+  function calcularDesconto(e: ChangeEvent<HTMLInputElement>) {
+    setDesconto(e.target.value);
   }
 
   return (
@@ -518,24 +522,24 @@ const Cadastro: React.FC = () => {
                   {area.itens.map((item, indexItem) => (
                     <div key={indexItem}>
                       <Row>
-                    <Col>
-                      <Button
-                        className="float-right"
-                        onClick={() => excluirItem(index, indexItem)}
-                        variant="danger"
-                        size="sm"
-                      >
-                        Excluir
-                      </Button>
-                    </Col>
-                  </Row>
+                        <Col>
+                          <Button
+                            className="float-right"
+                            onClick={() => excluirItem(index, indexItem)}
+                            variant="danger"
+                            size="sm"
+                          >
+                            Excluir
+                          </Button>
+                        </Col>
+                      </Row>
                       <Row>
                         <Col>
                           <Form.Group>
                             <Form.Label>Descrição</Form.Label>
                             <Form.Control
                               type="text"
-                              placeholder="LAVATÓRIO"
+                              placeholder="Descrição"
                               name="descricao"
                               value={item.descricao}
                               min="0"
@@ -563,15 +567,17 @@ const Cadastro: React.FC = () => {
                           >
                             <option>Selecione...</option>
                             {produtos
-                              ? produtos.map((produto) => (
-                                  <option
-                                    key={produto.id}
-                                    value={produto.id}
-                                    selected={produto.id === item.idProduto}
-                                  >
-                                    {produto.nome}
-                                  </option>
-                                ))
+                              ? produtos
+                                  .sort((a, b) => a.nome.localeCompare(b.nome))
+                                  .map((produto) => (
+                                    <option
+                                      key={produto.id}
+                                      value={produto.id}
+                                      selected={produto.id === item.idProduto}
+                                    >
+                                      {produto.nome}
+                                    </option>
+                                  ))
                               : "Loading..."}
                           </Form.Control>
                         </Col>
@@ -687,15 +693,25 @@ const Cadastro: React.FC = () => {
                 </div>
                 <div className="float-right">
                   <b>
-                  {area.total.toLocaleString("pt-BR", {
-                                style: "currency",
-                                currency: "BRL",
-                              })}
-                              </b>
+                    {area.total.toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}
+                  </b>
                 </div>
               </Card.Body>
             </Card>
           ))}
+
+          <Card>
+            <Card.Body>
+              <div className="float-right">
+                <h3>
+                  <b>{total}</b>
+                </h3>
+              </div>
+            </Card.Body>
+          </Card>
 
           <Card>
             <Card.Body>
@@ -708,6 +724,17 @@ const Cadastro: React.FC = () => {
                   disabled={true}
                   value={total}
                   // onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarModel(e)}
+                />
+              </Form.Group>
+              <Form.Group>
+                <Form.Control
+                  type="text"
+                  placeholder="Valor"
+                  name="desconto"
+                  value={desconto}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    calcularDesconto(e)
+                  }
                 />
               </Form.Group>
               <div className="orcamento-button">
