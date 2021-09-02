@@ -9,6 +9,7 @@ import Orcamento from '../pages/Orcamento'
 import OrcamentoCadastro from '../pages/Orcamento/Cadastro'
 import OrcamentoDetalhe from '../pages/Orcamento/Detalhe'
 import Login from '../pages/Usuario'
+import Relatorio from '../pages/Relatorio'
 
 const OtherRoutes: React.FC = () => {
   return (
@@ -25,6 +26,8 @@ const OtherRoutes: React.FC = () => {
         <Route path="/orcamentos/cadastro" exact component={OrcamentoCadastro}/>
         <Route path="/orcamentos/cadastro/:id" exact component={OrcamentoCadastro}/>
         <Route path="/orcamentos/detalher/:id" exact component={OrcamentoDetalhe}/>
+
+        <Route path="/relatorios" exact component={Relatorio}/>
     </Switch>
   );
 };

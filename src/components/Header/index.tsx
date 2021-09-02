@@ -31,7 +31,7 @@ const Header: React.FC = () => {
         <Nav className="mr-auto">
           <Nav.Item className="nav-link" as={Link} to="/produtos" >Produtos</Nav.Item>
           <Nav.Item className="nav-link" as={Link} to="/orcamentos">Orçamentos</Nav.Item>
-          <Nav.Item className="nav-link" as={Link} to="">Relatórios</Nav.Item>
+          <Nav.Item className="nav-link" as={Link} to="/relatorios">Relatórios</Nav.Item>
         </Nav>
           <Button className="float-right" variant="danger" size="sm" onClick={Sair}>Sair</Button>
       </Navbar.Collapse>

@@ -27,7 +27,7 @@ const Detalhe: React.FC = () => {
     quantidade: 0,
     valorPago: 0,
     valorVenda: 0,
-    foto: "",                                                                                  
+    foto: "",
   });
   const [itens, setItens] = useState<IItem[]>([]);
   const [areas, setAreas] = useState<IArea[]>([]);
@@ -36,6 +36,8 @@ const Detalhe: React.FC = () => {
     nome: "",
     cpfCnpj: "",
     total: 0,
+    desconto: 0,
+    fechado: false,
     areas: [
       ...areas,
       {
@@ -74,6 +76,10 @@ const Detalhe: React.FC = () => {
     history.goBack();
   }
 
+  function print() {
+    window.print();
+  }
+
   return (
     <div className="container">
       <Row>
@@ -97,7 +103,7 @@ const Detalhe: React.FC = () => {
       </Row>
       <hr></hr>
       <div>
-        <Button
+        {/* <Button
           className="float-right"
           onClick={back}
           variant="danger"
@@ -105,12 +111,24 @@ const Detalhe: React.FC = () => {
         >
           Voltar
         </Button>
+        <br />
+        <br /> */}
+        <Button
+          className="float-right"
+          onClick={print}
+          variant="primary"
+          size="sm"
+        >
+          Imprimir
+        </Button>
       </div>
       <br />
       <h1>ORÇAMENTO DETALHADO</h1>
       <br />
       <Row>
-        <Col>Cliente : {orcamento.nome}/ {orcamento.cpfCnpj}</Col>
+        <Col>
+          Cliente : {orcamento.nome} / {orcamento.cpfCnpj}
+        </Col>
       </Row>
 
       <br />
@@ -120,190 +138,78 @@ const Detalhe: React.FC = () => {
       <br />
 
       <div>
-      {orcamento.areas.map((area, index) => (
-        <div>
-          <h3>{area.nome}</h3>
-          <Table striped bordered hover>
-          <thead>
-            <tr>
-              <th>Quantidade</th>
-              <th>Produto</th>
-              <th>Comprimento</th>
-              <th>Largura</th>
-              <th>M²</th>
-              <th>M² Total</th>
-              <th>Valor M²</th>
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {area.itens.map((item, indexItem) => (
-              <tr>
-                <td>{item.quantidade}</td>
-                <td>{item.descricao}</td>
-                <td>{item.comprimento == 0 ? "" : item.comprimento}</td>
-                <td>{item.largura == 0 ? "" : item.largura}</td>
-                <td>{item.m2 == 0 ? "" : item.m2 / item.quantidade}</td>
-                <td>{item.m2 == 0 ? "" : item.m2}</td>
-                <td>{item.valorUnitario}</td>
-                <td>{item.valorTotal.toLocaleString("pt-BR", {
-                                style: "currency",
-                                currency: "BRL",
-                              })}</td>                                                      
-              </tr>
+        {orcamento.areas.map((area, index) => (
+          <div>
+            <h3>{area.nome}</h3>
+            <Table striped bordered hover>
+              <thead>
+                <tr>
+                  <th>Quantidade</th>
+                  <th>Produto</th>
+                  <th>Comprimento</th>
+                  <th>Largura</th>
+                  <th>M²</th>
+                  <th>M² Total</th>
+                  <th>Valor M²</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {area.itens.map((item, indexItem) => (
+                  <tr>
+                    <td>{item.quantidade}</td>
+                    <td>{item.descricao}</td>
+                    <td>{item.comprimento == 0 ? "" : item.comprimento}</td>
+                    <td>{item.largura == 0 ? "" : item.largura}</td>
+                    <td>{item.m2 == 0 ? "" : item.m2 / item.quantidade}</td>
+                    <td>{item.m2 == 0 ? "" : item.m2}</td>
+                    <td>{item.valorUnitario}</td>
+                    <td>
+                      {item.valorTotal.toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })}
+                    </td>
+                  </tr>
                 ))}
-          </tbody>
-        </Table>
+              </tbody>
+            </Table>
 
-        <h3 className="total"> {area.total.toLocaleString("pt-BR", {
-                                style: "currency",
-                                currency: "BRL",
-                              })}</h3>
+            <h3 className="total">
+              {" "}
+              {area.total.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              })}
+            </h3>
 
-        <hr></hr>
-        </div>
-      ))}
+            <hr></hr>
+          </div>
+        ))}
 
-        {/* <h3>BANHEIRO MASCULINO PRETO SÃO GABRIEL</h3>
-        <Table striped bordered hover>
-          <thead>
-            <tr>
-              <th>Quantidade</th>
-              <th>Produto</th>
-              <th>Largura</th>
-              <th>Comprimento</th>
-              <th>M²</th>
-              <th>M² Total</th>
-              <th>Valor M²</th>
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>7</td>
-              <td>DIVISÓRIA</td>
-              <td>1,54</td>
-              <td>1,82</td>
-              <td>2,4934</td>
-              <td>19,6196</td>
-              <td>360,00</td>
-              <td>7063,05</td>
-            </tr>
-            <tr>
-              <td>7</td>
-              <td>DIVISÓRIA</td>
-              <td>0,22</td>
-              <td>1,82</td>
-              <td>0,4004</td>
-              <td>2,8028</td>
-              <td>360,00</td>
-              <td>1.009,00</td>
-            </tr>
-            <tr>
-              <td>9</td>
-              <td>DIVISÓRIA MICTÓRIO</td>
-              <td>1,22</td>
-              <td>0,62</td>
-              <td>0,5124</td>
-              <td>6,8076</td>
-              <td>360,00</td>
-              <td>2.450,73</td>
-            </tr>
-
-            <tr>
-              <td>1</td>
-              <td>LAVATÓRIO</td>
-              <td>3,2</td>
-              <td>1,1</td>
-              <td>3,52</td>
-              <td>3,52</td>
-              <td>360,00</td>
-              <td>1.267,20</td>
-            </tr>
-
-            <tr>
-              <td>4</td>
-              <td>PÉ LATERAL</td>
-              <td>0,9</td>
-              <td>1</td>
-              <td>0,9</td>
-              <td>3,6</td>
-              <td>360,00</td>
-              <td>1.296,00</td>
-            </tr>
-            <tr>
-              <td>1</td>
-              <td>PNE</td>
-              <td>1,5</td>
-              <td>1</td>
-              <td>1,5</td>
-              <td>1,5</td>
-              <td>360,00</td>
-              <td>540,00</td>
-            </tr>
-            <tr>
-              <td>17</td>
-              <td>PRATELEIRAS</td>
-              <td>0,19</td>
-              <td>1</td>
-              <td>0,19</td>
-              <td>3,23</td>
-              <td>360,00</td>
-              <td>1.162,80</td>
-            </tr>
-            <tr>
-              <td>1</td>
-              <td>FILETE</td>
-              <td>0,05</td>
-              <td>22</td>
-              <td>1,1</td>
-              <td>1,1</td>
-              <td>360,00</td>
-              <td>396,00</td>
-            </tr>
-            <tr>
-              <td>31</td>
-              <td>ACABAMENTO 1/2 ESQUADRIA</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td>50</td>
-              <td>1.550,00</td>
-            </tr>
-            <tr>
-              <td>112,2</td>
-              <td>ACABAMENTO SIMPLES RETO</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td>10</td>
-              <td>1.120,20</td>
-            </tr>
-            <tr>
-              <td>5</td>
-              <td>FURO DE CUBA</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td>33</td>
-              <td>165,00</td>
-            </tr>
-          </tbody>
-        </Table> */}
-
-        
         <hr></hr>
       </div>
 
+      <Row hidden={orcamento.desconto == 0}>
+        <Col>
+          <h4 className="total">
+            DESCONTO: -{" "}
+            {orcamento.desconto.toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            })}
+          </h4>
+        </Col>
+      </Row>
       <Row>
         <Col>
-          <h4 className="total">VALOR TOTAL: {orcamento.total.toLocaleString("pt-BR", {
-                                style: "currency",
-                                currency: "BRL",
-                              })}</h4>
+          <h4 className="total">
+            TOTAL:{" "}
+            {(orcamento.total - orcamento.desconto).toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            })}
+          </h4>
         </Col>
       </Row>
 

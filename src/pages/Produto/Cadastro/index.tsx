@@ -12,7 +12,7 @@ import { tratamentoErro } from "../../../Erro/tratamento";
 import ITipoProduto from "../../../Interface/ITipoProduto";
 import produtoAPI from "../../../service/produto";
 import tipoMedidaAPI from "../../../service/tipoMedida";
-import swal from 'sweetalert';
+import swal from "sweetalert";
 
 interface IProduto {
   id?: number | undefined;
@@ -41,7 +41,7 @@ const Cadastro: React.FC = () => {
     quantidade: undefined,
     valorPago: undefined,
     valorVenda: undefined,
-    foto: ""
+    foto: "",
   });
   const [tipoProdutos, setTipoProdutos] = useState<ITipoProduto[]>([]);
 
@@ -89,7 +89,7 @@ const Cadastro: React.FC = () => {
       ...produto,
       [e.target.name]: Number.isNaN(parseInt(e.target.value))
         ? e.target.value
-        : parseInt(e.target.value),
+        : parseFloat(e.target.value),
     });
   }
 
@@ -98,9 +98,7 @@ const Cadastro: React.FC = () => {
 
     value.quantidade = undefined;
 
-    setProduto(
-      value
-    );
+    setProduto(value);
 
     console.log(produto);
   }
@@ -108,47 +106,38 @@ const Cadastro: React.FC = () => {
   async function onSubmit(e: any) {
     e.preventDefault();
 
-    if(id !== undefined)
-    {
+    if (id !== undefined) {
       const response = await produtoAPI.editar(id, produto);
 
-      if(response.status === 200)
-      {
+      if (response.status === 200) {
         history.push("/produtos", "Operação realizada com sucesso.");
-      }
-      else if(response.status !== 200)
-      {
+      } else if (response.status !== 200) {
         const texto = tratamentoErro(response.status, response.data.errors);
 
-        await alerta("Alerta", texto?.toString(), "error")
-        
+        await alerta("Alerta", texto?.toString(), "error");
       }
-    }
-    else
-    {
+    } else {
       const response = await produtoAPI.criar(produto);
 
-      if(response.status === 200)
-      {
+      if (response.status === 200) {
         history.push("/produtos", "Operação realizada com sucesso.");
-      }
-      else if(response.status !== 200)
-      {
+      } else if (response.status !== 200) {
         const texto = tratamentoErro(response.status, response.data.errors);
 
-        await alerta("Alerta", texto?.toString(), "error")
-        
+        await alerta("Alerta", texto?.toString(), "error");
       }
-
     }
-
   }
 
-  async function alerta(titulo : string, texto : string | undefined, icone : string) {
+  async function alerta(
+    titulo: string,
+    texto: string | undefined,
+    icone: string
+  ) {
     swal({
       title: "Alerta",
       text: texto?.toString(),
-      icon: "error"
+      icon: "error",
     });
   }
 
@@ -187,8 +176,7 @@ const Cadastro: React.FC = () => {
               defaultValue="Selecione..."
               name="idTipoProduto"
               onChange={(e: ChangeEvent<HTMLInputElement>) => (
-                resetValue(),
-                atualizarModel(e)
+                resetValue(), atualizarModel(e)
               )}
             >
               <option>Selecione...</option>
@@ -249,6 +237,9 @@ const Cadastro: React.FC = () => {
               <Form.Control
                 type="number"
                 placeholder="Valor pago"
+                pattern="[0-9]+([,\.][0-9]+)?"
+                min="0"
+                step="any"
                 name="valorPago"
                 value={produto.valorPago}
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -262,7 +253,9 @@ const Cadastro: React.FC = () => {
                 type="number"
                 placeholder="Valor venda"
                 name="valorVenda"
-                pattern="[0-9]{0,5}"
+                pattern="[0-9]+([,\.][0-9]+)?"
+                min="0"
+                step="any"
                 value={produto.valorVenda}
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   atualizarModel(e)
@@ -278,7 +271,9 @@ const Cadastro: React.FC = () => {
                 type="number"
                 placeholder="Valor venda"
                 name="valorVenda"
-                pattern="[0-9]{0,5}"
+                pattern="[0-9]+([,\.][0-9]+)?"
+                min="0"
+                step="any"
                 value={produto.valorVenda}
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   atualizarModel(e)

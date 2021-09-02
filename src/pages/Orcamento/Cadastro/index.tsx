@@ -147,7 +147,6 @@ const Cadastro: React.FC = () => {
     indexArea: number,
     indexItem: number
   ) {
-
     debugger;
     const value = { ...orcamento };
     const keyName = e.target.name;
@@ -167,7 +166,6 @@ const Cadastro: React.FC = () => {
       keyName === "valorUnitario" ||
       keyName === "valorTotal"
     ) {
-      
       value.areas[indexArea].itens[indexItem][keyName] = parseFloat(
         e.target.value
       );
@@ -246,6 +244,10 @@ const Cadastro: React.FC = () => {
     setOrcamento(data);
     setTotal(
       data.total.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
+    );
+    debugger;
+    setDesconto(
+      data.desconto
     );
   }
 
@@ -424,7 +426,12 @@ const Cadastro: React.FC = () => {
   }
 
   function calcularDesconto(e: ChangeEvent<HTMLInputElement>) {
-    setDesconto(e.target.value);
+    debugger;
+    let valor = e.target.value == "" ? "0" : e.target.value;
+    setDesconto(valor);
+    const orc = { ...orcamento };
+    orc.desconto = parseFloat(valor);
+    orcamento.desconto = parseFloat(valor);
   }
 
   return (
@@ -439,7 +446,7 @@ const Cadastro: React.FC = () => {
       <div>
         <Button
           onClick={addArea}
-          variant="dark"
+          variant="primary"
           size="sm"
           className="float-right"
         >
@@ -660,9 +667,12 @@ const Cadastro: React.FC = () => {
                           <Form.Group>
                             <Form.Label>Valor unitário</Form.Label>
                             <Form.Control
-                              type="text"
+                              type="number"
                               placeholder="Valor unitário"
                               name="valorUnitario"
+                              pattern="[0-9]+([,\.][0-9]+)?"
+                              min="0"
+                              step="any"
                               value={item.valorUnitario}
                               onChange={(e: ChangeEvent<HTMLInputElement>) => (
                                 atualizarItem(e, index, indexItem),
@@ -707,7 +717,15 @@ const Cadastro: React.FC = () => {
             <Card.Body>
               <div className="float-right">
                 <h3>
-                  <b>{total}</b>
+                  <b>
+                    {(orcamento.total - orcamento.desconto).toLocaleString(
+                      "pt-BR",
+                      {
+                        style: "currency",
+                        currency: "BRL",
+                      }
+                    )}
+                  </b>
                 </h3>
               </div>
             </Card.Body>
@@ -716,7 +734,7 @@ const Cadastro: React.FC = () => {
           <Card>
             <Card.Body>
               <Form.Group>
-                <Form.Label>Total</Form.Label>
+                <Form.Label>Total sem desconto</Form.Label>
                 <Form.Control
                   type="text"
                   placeholder="Total"
@@ -728,7 +746,10 @@ const Cadastro: React.FC = () => {
               </Form.Group>
               <Form.Group>
                 <Form.Control
-                  type="text"
+                  type="number"
+                  pattern="[0-9]+([,\.][0-9]+)?"
+                  min="0"
+                  step="any"
                   placeholder="Valor"
                   name="desconto"
                   value={desconto}

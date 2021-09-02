@@ -5,6 +5,8 @@ interface IOrcamento {
   nome: string;
   cpfCnpj: string;
   total: number;
+  desconto: number;
+  fechado: boolean;
   areas: IArea[];
 }
 
