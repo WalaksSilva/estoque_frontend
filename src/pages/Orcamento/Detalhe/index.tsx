@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Card, Col, Row, Table, Image } from "react-bootstrap";
+import { IoIosEyeOff, IoIosEye } from "react-icons/io";
 import {
   BrowserRouter as Router,
   Route,
@@ -29,6 +30,8 @@ const Detalhe: React.FC = () => {
     valorVenda: 0,
     foto: "",
   });
+  const [hidden, setHidden] = useState(true);
+  const [hiddenButton, setHiddenButton] = useState(false);
   const [itens, setItens] = useState<IItem[]>([]);
   const [areas, setAreas] = useState<IArea[]>([]);
   const [orcamento, setOrcamento] = useState<IOrcamento>({
@@ -77,7 +80,15 @@ const Detalhe: React.FC = () => {
   }
 
   function print() {
-    window.print();
+    setHiddenButton(!hiddenButton);
+    setTimeout(() => {
+      window.print();
+      setHiddenButton(false);
+    }, 3);
+  }
+
+  function hiddenValue() {
+    setHidden(!hidden)
   }
 
   return (
@@ -102,17 +113,7 @@ const Detalhe: React.FC = () => {
         </Col>
       </Row>
       <hr></hr>
-      <div>
-        {/* <Button
-          className="float-right"
-          onClick={back}
-          variant="danger"
-          size="sm"
-        >
-          Voltar
-        </Button>
-        <br />
-        <br /> */}
+      <div hidden={hiddenButton}>
         <Button
           className="float-right"
           onClick={print}
@@ -120,6 +121,24 @@ const Detalhe: React.FC = () => {
           size="sm"
         >
           Imprimir
+        </Button>
+        <Button
+          hidden={hidden}
+          className="float-right"
+          onClick={hiddenValue}
+          variant="danger"
+          size="sm"
+        >
+          <IoIosEyeOff />
+        </Button>
+        <Button
+          hidden={!hidden}
+          className="float-right"
+          onClick={hiddenValue}
+          variant="light"
+          size="sm"
+        >
+          <IoIosEye />
         </Button>
       </div>
       <br />
@@ -159,9 +178,9 @@ const Detalhe: React.FC = () => {
                   <tr>
                     <td>{item.quantidade}</td>
                     <td>{item.descricao}</td>
-                    <td>{item.comprimento == 0 ? "" : item.comprimento}</td>
-                    <td>{item.largura == 0 ? "" : item.largura}</td>
-                    <td>{item.m2 == 0 ? "" : item.m2 / item.quantidade}</td>
+                    <td>{item.comprimento == 0 || !hidden ? "" : item.comprimento}</td>
+                    <td>{item.largura == 0 || !hidden ? "" : item.largura}</td>
+                    <td>{item.m2 == 0 || !hidden ? "" : item.m2 / item.quantidade}</td>
                     <td>{item.m2 == 0 ? "" : item.m2}</td>
                     <td>{item.valorUnitario}</td>
                     <td>
