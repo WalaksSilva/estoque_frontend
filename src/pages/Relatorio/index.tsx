@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Badge, Button, Card, ListGroup, Table } from "react-bootstrap";
+import { Badge, Button, Card, ListGroup, Table, Image} from "react-bootstrap";
 import {
   BrowserRouter as Router,
   Route,
@@ -17,6 +17,7 @@ import IOrcamento from "../../Interface/IOrcamento";
 const Relatorio: React.FC = () => {
   const history = useHistory();
   const [orcamentos, setOrcamentos] = useState<IOrcamento[]>([]);
+  const [loading, setLoading] = useState(false);
 
 
   useEffect(() => {
@@ -24,6 +25,7 @@ const Relatorio: React.FC = () => {
   }, []);
 
   async function carregarOrcamentos() {
+    setLoading(true);
     const response = await orcamentoAPI.listar();
 
     if (response.status === 200) {
@@ -33,6 +35,8 @@ const Relatorio: React.FC = () => {
 
       await alerta("Alerta", texto?.toString(), "error");
     }
+
+    setLoading(false);
   }
 
   async function alerta(
@@ -73,6 +77,9 @@ const Relatorio: React.FC = () => {
           </tr>
         </tbody>
       </Table>
+      <div className="loading">
+        <Image hidden={!loading} src={window.location.origin + "/loading2.gif"} rounded />
+      </div>
     </div>
   );
 };

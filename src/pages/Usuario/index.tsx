@@ -92,7 +92,7 @@ const Login: React.FC = () => {
         <Button hidden={loading} variant="primary" type="submit">
           Entrar
         </Button>
-        <div>
+        <div className="loading">
           <Image hidden={!loading} src={window.location.origin + "/loading2.gif"} rounded />
         </div>
         {/* </Row> */}

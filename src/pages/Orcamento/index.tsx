@@ -1,5 +1,5 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
-import { Badge, Button, Table, Form, Row, Col } from "react-bootstrap";
+import { Badge, Button, Table, Form, Row, Col, Image } from "react-bootstrap";
 import {
   BrowserRouter as Router,
   Route,
@@ -27,6 +27,7 @@ const Orcamento: React.FC = (props: any) => {
     valor: number;
   }
 
+  const [loading, setLoading] = useState(false);
   const [orcamentos, setOrcamentos] = useState<IOrcamento[]>([]);
   const [orcamentosAll, setOrcamentosAll] = useState<IOrcamento[]>([]);
   const history = useHistory();
@@ -42,6 +43,7 @@ const Orcamento: React.FC = (props: any) => {
   }, []);
 
   async function carregarOrcamentos() {
+    setLoading(true);
     const response = await orcamentoAPI.listar();
 
     if (response.status === 200) {
@@ -52,6 +54,8 @@ const Orcamento: React.FC = (props: any) => {
 
       await alerta("Alerta", texto?.toString(), "error");
     }
+
+    setLoading(false);
   }
 
   async function alerta(
@@ -242,6 +246,9 @@ const Orcamento: React.FC = (props: any) => {
           ))}
         </tbody>
       </Table>
+      <div className="loading">
+        <Image hidden={!loading} src={window.location.origin + "/loading2.gif"} rounded />
+      </div>
     </div>
   );
 };

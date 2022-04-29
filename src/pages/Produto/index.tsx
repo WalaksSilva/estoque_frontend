@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useEffect, useState } from 'react'
-import { Button, Table, Badge, Row, Col, Form } from 'react-bootstrap';
+import { Button, Table, Badge, Row, Col, Form, Image } from 'react-bootstrap';
 import { BrowserRouter as Router, Route, Switch, RouteComponentProps, useHistory } from 'react-router-dom';
 import { tratamentoErro } from '../../Erro/tratamento';
 
@@ -16,6 +16,7 @@ import swal from 'sweetalert';
 
 const Produto : React.FC = (props: any)  => {
 
+  const [loading, setLoading] = useState(false);
   const [produtos, setProdutos] = useState<IProduto[]>([]);
   const [produtosAll, setProdutosAll] = useState<IProduto[]>([]);
   const history = useHistory();
@@ -33,6 +34,8 @@ const Produto : React.FC = (props: any)  => {
   }, []);
 
   async function carregarProdutos() {
+    setLoading(true);
+
     const response = await produto.listar();
 
     if(response.status === 200)
@@ -47,6 +50,8 @@ const Produto : React.FC = (props: any)  => {
       await alerta("Alerta", texto?.toString(), "error")
       
     }
+
+    setLoading(false);
 
   }
 
@@ -176,6 +181,9 @@ const Produto : React.FC = (props: any)  => {
         }
         </tbody>
       </Table>
+      <div className="loading">
+        <Image hidden={!loading} src={window.location.origin + "/loading2.gif"} rounded />
+      </div>
     </div>
   )
 }
