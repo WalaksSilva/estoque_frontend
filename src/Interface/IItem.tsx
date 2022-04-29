@@ -8,6 +8,7 @@ interface IItem {
     largura: number | undefined;
     comprimento: number | undefined;
     m2: number;
+    ml: number;
     valorUnitario: number;
     valorTotal: number;
     produto: IProduto;

@@ -30,12 +30,14 @@ interface IOrcamento {
 
 interface IItem {
   id: number;
+  ordem: number;
   idProduto: number;
   produto: IProduto | undefined;
   nome: string;
   largura: number | undefined;
   comprimento: number | undefined;
   m2: number;
+  ml: number;
   valorUnitario: number;
   valorTotal: number;
   material: boolean;
@@ -68,20 +70,20 @@ const Cadastro: React.FC = () => {
     }
   }, [id]);
 
-  const [validated, setValidated] = useState(false);
-  const [disable, setDisable] = useState(false);
   const [total, setTotal] = useState<string>("");
   const [desconto, setDesconto] = useState<string>("");
   const history = useHistory();
   const [itens, setItens] = useState<IItem[]>([]);
   const [item, setItem] = useState<IItem>({
     id: 0,
+    ordem: 0,
     idProduto: 0,
     produto: undefined,
     nome: "",
     largura: undefined,
     comprimento: undefined,
     m2: 0,
+    ml: 0,
     valorUnitario: 0,
     valorTotal: 0,
     material: true,
@@ -107,12 +109,14 @@ const Cadastro: React.FC = () => {
           ...itens,
           {
             id: 0,
+            ordem: 0,
             idProduto: 0,
             produto: undefined,
             nome: "",
             largura: undefined,
             comprimento: undefined,
             m2: 0,
+            ml: 0,
             valorUnitario: 0,
             valorTotal: 0,
             material: true,
@@ -147,7 +151,6 @@ const Cadastro: React.FC = () => {
     indexArea: number,
     indexItem: number
   ) {
-    debugger;
     const value = { ...orcamento };
     const keyName = e.target.name;
 
@@ -163,6 +166,7 @@ const Cadastro: React.FC = () => {
       keyName === "largura" ||
       keyName === "idProduto" ||
       keyName === "m2" ||
+      keyName === "ml" ||
       keyName === "valorUnitario" ||
       keyName === "valorTotal"
     ) {
@@ -245,7 +249,6 @@ const Cadastro: React.FC = () => {
     setTotal(
       data.total.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
     );
-    debugger;
     setDesconto(
       data.desconto
     );
@@ -265,12 +268,14 @@ const Cadastro: React.FC = () => {
         ...itens,
         {
           id: 0,
+          ordem: 0,
           idProduto: 0,
           produto: undefined,
           nome: "",
           largura: undefined,
           comprimento: undefined,
           m2: 0,
+          ml: 0,
           valorUnitario: 0,
           valorTotal: 0,
           material: true,
@@ -286,14 +291,18 @@ const Cadastro: React.FC = () => {
   function addItem(index: number) {
     const value = { ...orcamento };
 
+    var i = value.areas[index].itens.length + 1;
+
     value.areas[index].itens.push({
       id: 0,
+      ordem: i,
       idProduto: 0,
       produto: undefined,
       nome: "",
       largura: undefined,
       comprimento: undefined,
       m2: 0,
+      ml: 0,
       valorUnitario: 0,
       valorTotal: 0,
       material: true,
@@ -307,7 +316,6 @@ const Cadastro: React.FC = () => {
   async function excluirItem(indexArea: number, indexItem: number) {
     const value = { ...orcamento };
 
-    debugger;
     var id = value.areas[indexArea].itens[indexItem].id;
     const response = await itemAPI.excluir(id);
 
@@ -346,9 +354,24 @@ const Cadastro: React.FC = () => {
       value.areas[indexArea].itens[indexItem].comprimento = 0;
       value.areas[indexArea].itens[indexItem].largura = 0;
       value.areas[indexArea].itens[indexItem].m2 = 0;
+      value.areas[indexArea].itens[indexItem].ml = 0;
       value.areas[indexArea].itens[indexItem].material = false;
+      value.areas[indexArea].itens[indexItem].valorTotal = prod !== undefined ? prod.valorVenda * quantidade : 0;
+
+    } else if(prod !== undefined && prod.idTipoProduto == 1 && prod.idTipoMedida == 5){
+
       value.areas[indexArea].itens[indexItem].valorTotal =
-        prod !== undefined ? prod.valorVenda * quantidade : 0;
+        prod !== undefined ? prod.valorVenda : 0;
+
+      const quantidade = value.areas[indexArea].itens[indexItem].quantidade;
+
+      value.areas[indexArea].itens[indexItem].comprimento = 0;
+      value.areas[indexArea].itens[indexItem].largura = 0;
+      value.areas[indexArea].itens[indexItem].m2 = 0;
+      value.areas[indexArea].itens[indexItem].ml = 0;
+      value.areas[indexArea].itens[indexItem].material = false;
+      value.areas[indexArea].itens[indexItem].valorTotal = prod !== undefined ? prod.valorVenda * quantidade : 0;
+        
     } else {
       value.areas[indexArea].itens[indexItem].material = true;
     }
@@ -376,12 +399,52 @@ const Cadastro: React.FC = () => {
       const totalItem = calcularTotalItem(m2, valorUnitario);
 
       if (m2 === 0) {
-        value.areas[indexArea].itens[indexItem].valorTotal =
-          totalItem * quantidade;
+        value.areas[indexArea].itens[indexItem].valorTotal = totalItem * quantidade;
       } else {
         value.areas[indexArea].itens[indexItem].valorTotal = totalItem;
+        value.areas[indexArea].itens[indexItem].ml = 0;
       }
     }
+
+    setOrcamento(value);
+    calcularTotal();
+    calcularTotalArea(indexArea);
+  }
+
+  function calcularMl(indexArea: number, indexItem: number) {
+    const value = { ...orcamento };
+    
+    const quantidade = value.areas[indexArea].itens[indexItem].quantidade;
+    const valorUnitario = value.areas[indexArea].itens[indexItem].valorUnitario;
+    const comprimento = value.areas[indexArea].itens[indexItem].comprimento;
+    const largula = value.areas[indexArea].itens[indexItem].largura;
+    const ml = value.areas[indexArea].itens[indexItem].ml;
+    
+    debugger;
+    if (!Number.isNaN(ml) && ml !== undefined) {
+      
+      let m2 : number = 0;
+      if(!Number.isNaN(comprimento) && !Number.isNaN(largula) && comprimento !== undefined && largula !== undefined)
+      {
+        m2 = parseFloat((comprimento * largula * quantidade).toFixed(2));
+      }
+
+      const totalItem = calcularTotalItem(ml, valorUnitario);
+      
+      if (ml != 0 || m2 == 0) {
+        value.areas[indexArea].itens[indexItem].valorTotal = totalItem * quantidade;
+        value.areas[indexArea].itens[indexItem].m2 = 0;
+        value.areas[indexArea].itens[indexItem].largura = 0;
+        value.areas[indexArea].itens[indexItem].comprimento = 0;
+      } 
+
+    }
+    // else if(!Number.isNaN(ml) && ml !== undefined)
+    // {
+    //   debugger;
+    //   const totalItem = calcularTotalItem(ml, valorUnitario);
+    //   value.areas[indexArea].itens[indexItem].valorTotal = totalItem * quantidade;
+    // }
 
     setOrcamento(value);
     calcularTotal();
@@ -398,12 +461,11 @@ const Cadastro: React.FC = () => {
     setOrcamento(orc);
   }
 
-  function calcularTotalItem(m2: number, valor: number) {
-    return m2 !== 0 ? parseFloat((m2 * valor).toFixed(2)) : valor;
+  function calcularTotalItem(m: number, valor: number) {
+    return m !== 0 ? parseFloat((m * valor).toFixed(2)) : valor;
   }
 
   function calcularTotal() {
-    debugger;
 
     const orc = { ...orcamento };
     let total: number = 0;
@@ -426,7 +488,6 @@ const Cadastro: React.FC = () => {
   }
 
   function calcularDesconto(e: ChangeEvent<HTMLInputElement>) {
-    debugger;
     let valor = e.target.value == "" ? "0" : e.target.value;
     setDesconto(valor);
     const orc = { ...orcamento };
@@ -526,7 +587,8 @@ const Cadastro: React.FC = () => {
                   </Row>
                   <hr />
 
-                  {area.itens.map((item, indexItem) => (
+                  {
+                  area.itens.sort((a, b) => a.ordem - b.ordem).map((item, indexItem) => (
                     <div key={indexItem}>
                       <Row>
                         <Col>
@@ -569,6 +631,7 @@ const Cadastro: React.FC = () => {
                               atualizarItem(e, index, indexItem),
                               setValorUnitario(index, indexItem, e),
                               calcularM2(index, indexItem),
+                              calcularMl(index, indexItem),
                               calcularTotal()
                             )}
                           >
@@ -603,7 +666,8 @@ const Cadastro: React.FC = () => {
                               step="any"
                               onChange={(e: ChangeEvent<HTMLInputElement>) => (
                                 atualizarItem(e, index, indexItem),
-                                calcularM2(index, indexItem)
+                                calcularM2(index, indexItem),
+                                calcularMl(index, indexItem)
                               )}
                             />
                           </Form.Group>
@@ -660,6 +724,25 @@ const Cadastro: React.FC = () => {
                               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                                 atualizarItem(e, index, indexItem)
                               }
+                            />
+                          </Form.Group>
+                        </Col>
+                        <Col>
+                          <Form.Group>
+                            <Form.Label>ML</Form.Label>
+                            <Form.Control
+                              type="number"
+                              placeholder="1,5"
+                              name="ml"
+                              disabled={!item.material}
+                              value={item.ml}
+                              pattern="[0-9]+([,\.][0-9]+)?"
+                              min="0"
+                              step="any"
+                              onChange={(e: ChangeEvent<HTMLInputElement>) => (
+                                atualizarItem(e, index, indexItem),
+                                calcularMl(index, indexItem)
+                              )}
                             />
                           </Form.Group>
                         </Col>

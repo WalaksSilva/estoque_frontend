@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Badge, Button, Table } from "react-bootstrap";
+import React, { useState, useEffect, ChangeEvent } from "react";
+import { Badge, Button, Table, Form, Row, Col } from "react-bootstrap";
 import {
   BrowserRouter as Router,
   Route,
@@ -28,6 +28,7 @@ const Orcamento: React.FC = (props: any) => {
   }
 
   const [orcamentos, setOrcamentos] = useState<IOrcamento[]>([]);
+  const [orcamentosAll, setOrcamentosAll] = useState<IOrcamento[]>([]);
   const history = useHistory();
 
   useEffect(() => {
@@ -45,6 +46,7 @@ const Orcamento: React.FC = (props: any) => {
 
     if (response.status === 200) {
       setOrcamentos(response.data);
+      setOrcamentosAll(response.data);
     } else if (response.status !== 200) {
       const texto = tratamentoErro(response.status, response.data.errors);
 
@@ -80,6 +82,24 @@ const Orcamento: React.FC = (props: any) => {
     history.push(`/orcamentos/detalher/${id}`);
   }
 
+  async function clonar(id: number) {
+
+    const response = await orcamentoAPI.clonar(id);
+
+    if (response.status === 200) {
+      
+      history.push(`/orcamentos/cadastro/${response.data.id}`);
+      await alerta("", "Operação realizada com sucesso.", "success");
+
+    } else if (response.status !== 200) {
+
+      const texto = tratamentoErro(response.status, response.data.errors);
+      await alerta("Alerta", texto?.toString(), "error");
+
+    }
+
+  }
+
   async function excluir(id: number) {
     const response = await orcamentoAPI.excluir(id);
 
@@ -109,6 +129,22 @@ const Orcamento: React.FC = (props: any) => {
     setOrcamentos(values);
   }
 
+  function filtro(e: ChangeEvent<HTMLInputElement>) {
+    
+    if(e.target.value === "" || e.target.value == null )
+    {
+      const values = [...orcamentosAll];
+      setOrcamentos(values);
+    }
+    else
+    {
+      const values = [...orcamentosAll];
+      let filtro = values.filter((x) => x.nome.toLowerCase().includes(e.target.value.toLowerCase()));
+      setOrcamentos(filtro);
+    }
+
+  }
+
   return (
     <div className="container">
       <br />
@@ -120,6 +156,21 @@ const Orcamento: React.FC = (props: any) => {
           Novo Orçamento
         </Button>
       </div>
+
+      <Row>
+        <Col>
+        <hr />
+        <h2>Filtro</h2>
+        <Form.Label >Nome</Form.Label>
+        <Form.Control
+          type="text"
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            filtro(e)
+          }
+        />
+        </Col>
+      </Row>
+
       <br />
       <Table
         striped
@@ -171,6 +222,13 @@ const Orcamento: React.FC = (props: any) => {
                   onClick={() => detalhe(item.id)}
                 >
                   Visualizar
+                </Button>{" "}
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => clonar(item.id)}
+                >
+                  Clonar
                 </Button>{" "}
                 <Button
                   variant="danger"

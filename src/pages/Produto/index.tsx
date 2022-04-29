@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { Button, Table, Badge } from 'react-bootstrap';
+import React, { ChangeEvent, useEffect, useState } from 'react'
+import { Button, Table, Badge, Row, Col, Form } from 'react-bootstrap';
 import { BrowserRouter as Router, Route, Switch, RouteComponentProps, useHistory } from 'react-router-dom';
 import { tratamentoErro } from '../../Erro/tratamento';
 
@@ -17,6 +17,7 @@ import swal from 'sweetalert';
 const Produto : React.FC = (props: any)  => {
 
   const [produtos, setProdutos] = useState<IProduto[]>([]);
+  const [produtosAll, setProdutosAll] = useState<IProduto[]>([]);
   const history = useHistory();
 
   useEffect(() => {
@@ -37,6 +38,7 @@ const Produto : React.FC = (props: any)  => {
     if(response.status === 200)
     {
       setProdutos(response.data);
+      setProdutosAll(response.data);
     }
     else if(response.status !== 200)
     {
@@ -94,6 +96,22 @@ const Produto : React.FC = (props: any)  => {
     
   }
 
+  function filtro(e: ChangeEvent<HTMLInputElement>) {
+    
+    if(e.target.value === "" || e.target.value == null )
+    {
+      const values = [...produtosAll];
+      setProdutos(values);
+    }
+    else
+    {
+      const values = [...produtosAll];
+      let filtro = values.filter((x) => x.nome.toLowerCase().includes(e.target.value.toLowerCase()));
+      setProdutos(filtro);
+    }
+
+  }
+
   return (
     <div className="container">
       <br />
@@ -103,6 +121,21 @@ const Produto : React.FC = (props: any)  => {
       <h1>Produtos</h1>
           <Button variant="dark" size="sm" onClick={novo}>Novo produto</Button>
       </div>
+
+      <Row>
+        <Col>
+        <hr />
+        <h2>Filtro</h2>
+        <Form.Label >Nome</Form.Label>
+        <Form.Control
+          type="text"
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            filtro(e)
+          }
+        />
+        </Col>
+      </Row>
+
       <br />
       <Table striped bordered hover className="text-center" variant="dark">
         <thead>

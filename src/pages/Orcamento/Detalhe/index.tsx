@@ -56,6 +56,7 @@ const Detalhe: React.FC = () => {
             largura: undefined,
             comprimento: undefined,
             m2: 0,
+            ml: 0,
             valorUnitario: 0,
             valorTotal: 0,
             produto: produto,
@@ -167,7 +168,7 @@ const Detalhe: React.FC = () => {
                   <th>Produto</th>
                   <th>Comprimento</th>
                   <th>Largura</th>
-                  <th>M²</th>
+                  <th>M²/ML</th>
                   <th>M² Total</th>
                   <th>Valor M²</th>
                   <th>Total</th>
@@ -180,7 +181,7 @@ const Detalhe: React.FC = () => {
                     <td>{item.descricao}</td>
                     <td>{item.comprimento == 0 || !hidden ? "" : item.comprimento}</td>
                     <td>{item.largura == 0 || !hidden ? "" : item.largura}</td>
-                    <td>{item.m2 == 0 || !hidden ? "" : item.m2 / item.quantidade}</td>
+                    <td>{item.m2 == 0 || !hidden ? "" : item.m2 / item.quantidade} {" "} {item.ml == 0 || !hidden ? "" : item.ml}</td>
                     <td>{item.m2 == 0 ? "" : item.m2}</td>
                     <td>{item.valorUnitario}</td>
                     <td>

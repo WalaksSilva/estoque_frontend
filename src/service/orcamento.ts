@@ -30,6 +30,15 @@ const orcamento = {
         }
     },
 
+    clonar: async (id : number) => {
+        try {
+            const response = await api.request.get(`orcamentos/clonar/${id}`);
+            return response;
+        } catch (error) {
+            return error.response;
+        }
+    },
+
     editar: async (id : string, data : any) => {
         try {
             const response = await api.request.put(`orcamentos/${id}`, data);
