@@ -50,6 +50,7 @@ const Detalhe: React.FC = () => {
           ...itens,
           {
             id: 0,
+            ordem: 0,
             idProduto: 0,
             quantidade: 0,
             nome: "",
@@ -175,7 +176,7 @@ const Detalhe: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {area.itens.map((item, indexItem) => (
+                {area.itens.sort((a, b) => a.ordem - b.ordem).map((item, indexItem) => (
                   <tr>
                     <td>{item.quantidade}</td>
                     <td>{item.descricao}</td>

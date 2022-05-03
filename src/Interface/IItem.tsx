@@ -2,6 +2,7 @@ import IProduto from "./IProduto";
 
 interface IItem {
     id: number;
+    ordem: number;
     idProduto: number;
     quantidade: number;
     nome: string;

@@ -32,7 +32,6 @@ interface ITipoMedida {
 
 const Cadastro: React.FC = () => {
   const [tipoMedidas, setTipoMedidas] = useState<ITipoMedida[]>([]);
-  const [produtos, setProdutos] = useState<IProduto[]>([]);
   const [produto, setProduto] = useState<IProduto>({
     id: 0,
     idTipoMedida: undefined,
@@ -51,7 +50,7 @@ const Cadastro: React.FC = () => {
   let teste = false;
 
   useEffect(() => {
-    carregarDados();
+    // carregarDados();
     carregarTipoProdutos();
     carregarTipoMedidas();
     if (id !== undefined) {
@@ -64,10 +63,10 @@ const Cadastro: React.FC = () => {
     setTipoMedidas(data);
   }
 
-  async function carregarDados() {
-    const { data } = await produtoAPI.listar();
-    setProdutos(data);
-  }
+  // async function carregarDados() {
+  //   const { data } = await produtoAPI.listar();
+  //   setProdutos(data);
+  // }
 
   async function recuperarProduto() {
     const { data } = await produtoAPI.recuperar(id);
@@ -84,23 +83,14 @@ const Cadastro: React.FC = () => {
   }
 
   function atualizarModel(e: ChangeEvent<HTMLInputElement>) {
-    console.log(e.target.value);
+    
     setProduto({
       ...produto,
       [e.target.name]: Number.isNaN(parseInt(e.target.value))
         ? e.target.value
         : parseFloat(e.target.value),
     });
-  }
-
-  function resetValue() {
-    const value = { ...produto };
-
-    value.quantidade = undefined;
-
-    setProduto(value);
-
-    console.log(produto);
+   
   }
 
   async function onSubmit(e: any) {
@@ -176,7 +166,7 @@ const Cadastro: React.FC = () => {
               defaultValue="Selecione..."
               name="idTipoProduto"
               onChange={(e: ChangeEvent<HTMLInputElement>) => (
-                resetValue(), atualizarModel(e)
+                atualizarModel(e)
               )}
             >
               <option>Selecione...</option>
@@ -203,13 +193,13 @@ const Cadastro: React.FC = () => {
                 }
               >
                 <option>Selecione...</option>
-                {tipoMedidas.map((item) => (
+                {tipoMedidas.map((itemMed) => (
                   <option
-                    selected={produto.idTipoMedida == item.id}
-                    key={item.id}
-                    value={item.id}
+                    selected={produto.idTipoMedida == itemMed.id}
+                    key={itemMed.id}
+                    value={itemMed.id}
                   >
-                    {item.nome}
+                    {itemMed.nome}
                   </option>
                 ))}
               </Form.Control>
