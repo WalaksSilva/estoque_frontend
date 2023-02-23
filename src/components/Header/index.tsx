@@ -24,7 +24,7 @@ const Header: React.FC = () => {
   }
 
   return (
-    <Navbar hidden={!disable}  bg="dark" variant="dark" expand="lg">
+    <Navbar hidden={!disable}  bg="dark" variant="dark" expand="lg" className="fixed-top">
       <Navbar.Brand href="#home" as={Link} to="/orcamentos"><Image className="logo" src={window.location.origin + "/logo1.1.png"} /></Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">

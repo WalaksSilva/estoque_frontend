@@ -59,7 +59,7 @@ const Relatorio: React.FC = () => {
     <div className="container">
       <br />
       <br />
-      <Table striped bordered hover>
+      <Table striped bordered hover className="margin-top-70">
         <thead>
           <tr>
             <th>Orçamentos</th>

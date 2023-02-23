@@ -95,7 +95,7 @@ const Detalhe: React.FC = () => {
 
   return (
     <div className="container">
-      <Row>
+      <Row className="margin-top-70">
         <Col xs={2} md={2}>
           <Image src={window.location.origin + "/logo1.1.png"} rounded />
         </Col>
@@ -108,7 +108,7 @@ const Detalhe: React.FC = () => {
           <br />
           <br />
           <p>
-            <b>Endereço:</b> Quadra AC 419 Conjunto I, 2, Lote 1 <br />
+            <b>Endereço:</b> Quadra AC 419 Conjunto I, 2, Lote 1 / Santa Maria - DF <br />
             <b>Celular:</b> (61) 98493-8607 <br />
             <b>Telefone:</b> (61) 3525-7728 <br />
           </p>
@@ -159,7 +159,17 @@ const Detalhe: React.FC = () => {
       <br />
 
       <div>
-        {orcamento.areas.map((area, index) => (
+        {orcamento.areas.sort(function(a, b) {
+            if(a.nome.toLowerCase() == '') return 1;
+            // if(a.nome.toLowerCase() < b.nome.toLowerCase()) return -1;
+            // if(a.nome.toLowerCase() > b.nome.toLowerCase()) return 1;
+            let item = a.nome.substr(0,2).replace(" ", "");
+            if(item.length === 1)
+            {
+                return 0;
+            }
+            return a.nome.substr(0,2) - b.nome.substr(0,2);
+          }).map((area, index) => (
           <div>
             <h3>{area.nome}</h3>
             <Table striped bordered hover>
@@ -183,8 +193,8 @@ const Detalhe: React.FC = () => {
                     <td>{item.comprimento == 0 || !hidden ? "" : item.comprimento}</td>
                     <td>{item.largura == 0 || !hidden ? "" : item.largura}</td>
                     <td>{item.m2 == 0 || !hidden ? "" : item.m2 / item.quantidade} {" "} {item.ml == 0 || !hidden ? "" : item.ml}</td>
-                    <td>{item.m2 == 0 ? "" : item.m2}</td>
-                    <td>{item.valorUnitario}</td>
+                    <td>{item.m2 == 0 || !hidden ? "" : item.m2}</td>
+                    <td>{!hidden ? "" : item.valorUnitario}</td>
                     <td>
                       {item.valorTotal.toLocaleString("pt-BR", {
                         style: "currency",

@@ -11,3 +11,22 @@ body {
 .loading img{
     width: 65px;
 }
+
+.topo-fixo{
+    margin-top: 66px;
+    background-color: #f6f7f8;
+  }
+
+.col-box{
+    display: flex;
+  align-items: center;
+  justify-content: center
+}
+
+.margin-top-70{
+    margin-top: 70px;
+}
+
+.margin-bottom-70{
+    margin-bottom: 70px;
+}

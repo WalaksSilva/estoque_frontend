@@ -500,26 +500,28 @@ const Cadastro: React.FC = () => {
       <br />
 
       <br />
-      <div className="orcamento-header">
-        <h1>Cadastro</h1>
-      </div>
+      
+      <Row className="fixed-top topo-fixo">
+        <Col className="col-box">
+          <h1>Cadastro de orçamento</h1>
+        </Col>
 
-      <div>
-        <Button
-          onClick={addArea}
-          variant="primary"
-          size="sm"
-          className="float-right"
-        >
-          Adicionar área
-        </Button>
-      </div>
+        <Col className="col-box">
+          <Button
+            onClick={addArea}
+            variant="primary"
+            size="sm"
+          >
+            Adicionar área
+          </Button>
+        </Col>
+      </Row>
 
       <br />
 
       <div className="container">
         <br />
-        <Form onSubmit={handleSubmit}>
+        <Form className="margin-top-70" onSubmit={handleSubmit}>
           <Row>
             <Col>
               <Form.Group>
@@ -552,7 +554,17 @@ const Cadastro: React.FC = () => {
             </Col>
           </Row>
 
-          {orcamento.areas.map((area, index) => (
+          {orcamento.areas.sort(function(a, b) {
+            if(a.nome.toLowerCase() == '') return 1;
+            // if(a.nome.toLowerCase() < b.nome.toLowerCase()) return -1;
+            // if(a.nome.toLowerCase() > b.nome.toLowerCase()) return 1;
+            let item = a.nome.substr(0,2).replace(" ", "");
+            if(item.length === 1)
+            {
+                return 0;
+            }
+            return a.nome.substr(0,2) - b.nome.substr(0,2);
+          }).map((area, index) => (
             <Card>
               <Card.Body>
                 <div key={index}>
@@ -827,7 +839,8 @@ const Cadastro: React.FC = () => {
                   // onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarModel(e)}
                 />
               </Form.Group>
-              <Form.Group>
+              <Form.Group className="margin-bottom-70">
+              <Form.Label>Desconto no valor total</Form.Label>
                 <Form.Control
                   type="number"
                   pattern="[0-9]+([,\.][0-9]+)?"
@@ -841,7 +854,7 @@ const Cadastro: React.FC = () => {
                   }
                 />
               </Form.Group>
-              <div className="orcamento-button">
+              <div className="orcamento-button fixed-bottom">
                 <Button onClick={back} variant="danger" size="sm">
                   Cancelar
                 </Button>
