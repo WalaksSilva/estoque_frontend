@@ -203,6 +203,16 @@ const Detalhe: React.FC = () => {
                     </td>
                   </tr>
                 ))}
+                  <tr>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>{!hidden ? "" : area.itens.reduce((acumulador, itemAtual) => acumulador + itemAtual.m2, 0)}</td>
+                      <td></td>
+                      <td></td>
+                  </tr>
               </tbody>
             </Table>
 
